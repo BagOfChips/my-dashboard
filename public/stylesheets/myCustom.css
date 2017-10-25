@@ -1,0 +1,172 @@
+/* GRID CELLS STYLING */
+
+.well {
+
+    min-height: 0;
+    padding: 20px;
+    margin: 0;
+    background-color: #f0dbe4;
+    border: 0;
+    border-radius: 0;
+    border-collapse: collapse;
+
+    /* remove super thin border between cells */
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.nav{
+    min-height: 0;
+    margin: 0;
+    background-color: #f0cdec;
+    border: 0;
+    border-radius: 0;
+    border-collapse: collapse;
+
+    /* remove super thin border between cells */
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.border-left {
+    border-left: 1px black solid;
+}
+
+.border-bottom {
+    border-bottom: 1px black solid;
+}
+
+.border-right {
+    border-right: 1px black solid;
+}
+
+/* MULTI SCROLLING */
+
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 0;
+    /* make scrollbar transparent */
+    background: transparent;
+}
+
+#main-container {
+    height: 100vh;
+    display: flex;
+}
+
+#main {
+    flex: 1;
+    display: flex;
+}
+
+#left-column-0 {
+    overflow-y: auto;
+    height: 100%;
+    flex: 1;
+}
+
+#right-column-0, #right-column-1 {
+    overflow-y: auto;
+    flex: 2;
+}
+
+#right-column-0 {
+    height: 33%;
+}
+
+#right-column-1 {
+    height: 67%;
+}
+
+/* PADDING */
+
+.container-fluid {
+    padding: 0;
+}
+
+.col-md-5, .col-xs-5 {
+    padding-right: 0;
+    /*padding-left: 0;*/
+}
+
+.col-md-7, .col-xs-7 {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* TABS */
+
+.nav {
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+
+.nav > li {
+    position: relative;
+    display: block;
+}
+
+.nav > li > a {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+}
+
+.nav > li > a:hover,
+.nav > li > a:focus {
+    text-decoration: none;
+    background-color: #1e3b55;
+    color: #f0dbe4;
+}
+
+.nav > li > a > img {
+    max-width: none;
+}
+
+.nav-tabs {
+    border-bottom: none;
+}
+
+.nav-tabs > li {
+    float: left;
+    margin-bottom: -1px;
+}
+
+.nav-tabs > li > a {
+    margin-right: 0;
+    line-height: 0.8;
+    border: 0;
+    border-radius: 0;
+}
+
+.nav-tabs > li > a:hover {
+    border: none;
+}
+
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+    color: #f0dbe4;
+    cursor: default;
+    background-color: #122333;
+    border: 0;
+    border-bottom-color: transparent;
+}
+
+
+
+
+/* COLOURS */
+p, a, h3, h4{
+    color: #122333;
+}
+
+
+
+
