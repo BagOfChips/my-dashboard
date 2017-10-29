@@ -41,21 +41,20 @@ function fetchTopHotPosts(subreddit, limit, callback){
     console.log("subreddit: " + subreddit);
     console.log("limit: " + limit);
 
-    if(limit % 10 != 0){
+    /*if(limit % 10 != 0){
         console.log("input limit: " + limit + " NOT DIVISIBLE BY 10");
-    }
+    }*/
 
     r.getSubreddit(subreddit).getHot({
-        limit: 10
+        limit: limit
     }).then(hotPosts => {
 
         var numberHotPosts = hotPosts.length;
         console.log("Number of hotPosts fetched: " + numberHotPosts);
-        //console.log(hotPosts);
+        console.log(hotPosts);
 
-        if(numberHotPosts >= 10){
-            //return hotPosts.slice(numberHotPosts - 10);
-            hotPosts = hotPosts.slice(numberHotPosts - 10);
+        if(numberHotPosts > limit){
+            hotPosts = hotPosts.slice(numberHotPosts - limit);
             callback(hotPosts);
         }else if(numberHotPosts >= 1){
             callback(hotPosts);

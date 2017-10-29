@@ -3,24 +3,141 @@ $(document).ready(function(){
 
     // todo: animate loading page
 
-
     // fetch front page of reddit
     $.get("/redditRall", {
-        limit: 10
+        limit: 25
     }, function(fetchedPosts){
 
-        /**
-         * tests:
-         *  1. is front page fetched? - DONE
-         *  2. is it displayed on the screen?
-         */
+        // todo: service should check if fetchedPosts is error
 
         // parse returned data
         var trimmedPosts = trimPosts(fetchedPosts);
-
+        var formattedPosts = toHTML(trimmedPosts);
+        displayPosts(formattedPosts);
 
     });
+
+    // hide nav bar if not hovered over
+    document.addEventListener("mousemove", toggleNavBar);
 });
+
+
+
+/**
+ * on mouseOver "near" top 10% of screen height
+ *  AND left 45% of screen (~5 / 12)
+ * DO reveal nav bar
+ *
+ * @param event
+ */
+function toggleNavBar(event){
+    var windowWidth = $(window).width();
+    //var windowHeight = $(window).height();
+    var mouseX = event.clientX;
+    var mouseY = event.clientY;
+
+    // todo: animate this
+    if(mouseX <= windowWidth * 0.44 && mouseY <= 30){
+        $("#nav").css("display", "block");
+    }else{
+        $("#nav").css("display", "none");
+    }
+}
+
+
+function displayPosts(formattedPosts){
+    $("#tab0").html(formattedPosts);
+}
+
+
+/**
+ * One bigass String concat
+ *
+ * @param redditPosts
+ * @returns {Array}
+ */
+function toHTML(redditPosts){
+    /**
+     <div class="row border-bottom" id="rAll-posts0">
+        <div class="col-md-2 col-xs-2 center-upvotes upvote-styling">
+            <p>upboats here</p>
+        </div>
+
+        <div class="col-md-10 col-xs-10">
+            <p class="reddit-title">title ... skrrr skrrr</p>
+
+            <div class="row extra-post-info">
+                <div class="col-md-3 col-xs-4">
+                    <p>author / username</p>
+                </div>
+
+                <div class="col-md-3 col-xs-4">
+                    <p>subreddit</p>
+                </div>
+
+                <div class="col-md-3 col-xs-4">
+                    <p>###### comments</p>
+                </div>
+            </div>
+        </div>
+     </div>
+     */
+
+    var posts = [];
+    for(var i = 0; i < redditPosts.length; i++){
+        var post = redditPosts[i];
+        var formattedPost = "";
+
+        if(i % 2 !== 0){
+            formattedPost += "<div class=\"row border-bottom border-top single-post\" id=\"rAll-posts" + i + "\">"
+        }else{
+            formattedPost += "<div class=\"row single-post\" id=\"rAll-posts" + i + "\">"
+        }
+
+        formattedPost +=
+            "<div class=\"col-md-2 col-xs-2 center-upvotes upvote-styling bold\">"
+                + "<p>" + redditPosts[i].score + "</p>"
+            + "</div>"
+
+            + "<div class=\"col-md-10 col-xs-10\">"
+                + "<a href=\"" + post.url + "\">"
+                    + "<p class=\"reddit-title\">" + post.title + "</p>"
+                + "</a>"
+
+                + "<div class=\"row extra-post-info\">"
+                    + "<div class=\"col-md-3 col-xs-3\">"
+                        + "<a href=\"https://www.reddit.com/user/" + post.author + "\">"
+                            + "<p>" + post.author + "</p>"
+                        + "</a>"
+                    + "</div>"
+
+                    + "<div class=\"col-md-3 col-xs-3 bold\">"
+                        + "<a href=\"https://www.reddit.com/" + post.subreddit + "\">"
+                            + "<p>" + post.subreddit + "</p>"
+                        + "</a>"
+                    + "</div>"
+
+                    + "<div class=\"col-md-3 col-xs-3 bold\">"
+                        + "<a href=\"https://www.reddit.com/" + post.permalink + "\">"
+                            + "<p>" + post.comments + " comments</p>"
+                        + "</a>"
+                    + "</div>"
+
+                    + "<div class=\"col-md-3 col-xs-3 bold\">"
+                        + "<p id=\"nsfw\">" + post.nsfw + "</p>"
+                    + "</div>"
+                + "</div>"
+            + "</div>"
+            + "</div>"
+        ;
+
+        posts.push(formattedPost);
+    }
+
+    console.log(posts.toString());
+    return posts;
+}
+
 
 
 /**
@@ -42,13 +159,23 @@ function trimPosts(posts){
     for(var i = 0; i < posts.length; i++){
         var postData = posts[i];
         post = {
+            id: postData.id,
             author: postData.author,
             title: postData.title,
             subreddit: postData.subreddit_name_prefixed,
             url: postData.url,
             score: postData.score,
             nsfw: postData.over_18,
+            comments: postData.num_comments,
+            permalink: postData.permalink,
+            url: postData.url
         };
+
+        if(post.nsfw == false){
+            post.nsfw = "";
+        }else{
+            post.nsfw = "NSFW";
+        }
         trimmedPosts.push(post);
     }
 

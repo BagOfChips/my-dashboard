@@ -22,7 +22,7 @@
                 console.log("Custom scrollbar initialized");
             }
         },
-        theme: "dark-thin"
+        theme: "light-thin"
     };
 
     $(window).on("load", function(){

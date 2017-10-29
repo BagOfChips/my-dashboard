@@ -1,3 +1,20 @@
+
+/* CUSTOM FONT */
+@font-face{
+    font-family: Gravity-Book;
+    src: url("/Gravity-Book.otf");
+}
+
+@font-face{
+    font-family: Gravity-Bold;
+    src: url("/Gravity-Bold.otf")
+}
+
+@font-face {
+    font-family: King;
+    src: url("/KIN668.TTF");
+}
+
 /* GRID CELLS STYLING */
 
 .well {
@@ -40,12 +57,19 @@
     border-right: 1px black solid;
 }
 
+.border-top{
+    border-top: 1px black solid;
+}
+
 /* MULTI SCROLLING */
 
 html, body {
     height: 100%;
     margin: 0;
     overflow: hidden;
+
+    /*font-family: Gravity-Book;*/
+    font-family: "Courier New";
 }
 
 ::-webkit-scrollbar {
@@ -68,6 +92,8 @@ html, body {
     overflow-y: auto;
     height: 100%;
     flex: 1;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 #right-column-0, #right-column-1 {
@@ -102,9 +128,14 @@ html, body {
 /* TABS */
 
 .nav {
+    font-size: 18px;
+    font-style: italic;
     padding-left: 0;
     margin-bottom: 0;
     list-style: none;
+    height: 24px;
+
+    background-color: #bababa;
 }
 
 .nav > li {
@@ -116,13 +147,15 @@ html, body {
     position: relative;
     display: block;
     padding: 10px 15px;
+    color: #2e3135;
+
 }
 
 .nav > li > a:hover,
 .nav > li > a:focus {
     text-decoration: none;
-    background-color: #1e3b55;
-    color: #f0dbe4;
+    background-color: #2e3135;
+    color: #bababa;
 }
 
 .nav > li > a > img {
@@ -140,7 +173,8 @@ html, body {
 
 .nav-tabs > li > a {
     margin-right: 0;
-    line-height: 0.8;
+    line-height: 0;
+    height: 10%;
     border: 0;
     border-radius: 0;
 }
@@ -152,9 +186,9 @@ html, body {
 .nav-tabs > li.active > a,
 .nav-tabs > li.active > a:hover,
 .nav-tabs > li.active > a:focus {
-    color: #f0dbe4;
+    color: #cc782f;
     cursor: default;
-    background-color: #122333;
+    background-color: #2e3135;
     border: 0;
     border-bottom-color: transparent;
 }
@@ -162,11 +196,94 @@ html, body {
 
 
 
+
+
 /* COLOURS */
 p, a, h3, h4{
-    color: #122333;
+    color: #b4a3b3;
 }
 
 
 
+/* CENTERING */
+.center-upvotes{
+    transform: translateY(50%);
+    text-align: center;
+}
+
+/* POSTS STYLING */
+.upvote-styling p{
+    font-size: 20px;
+    margin-bottom: 0;
+    color: #bababa;
+}
+
+.reddit-title{
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 0;
+    margin-top: 5px;
+    color: #cc782f;
+
+}
+
+.extra-post-info{
+    font-size: 14px;
+}
+
+.extra-post-info p{
+    margin-bottom: 5px;
+    color: #e8a64a;
+
+    text-overflow: ellipsis;
+    /*white-space: nowrap;*/
+    overflow: hidden;
+    width: 100%;
+}
+
+.left-well{
+    /*padding-top: 10px;
+    padding-right: 5px;
+    padding-left: 15px;*/
+    padding: 0;
+    background-color: #3a3d41;
+}
+
+.bold{
+    font-weight: bold;
+    /*font-family: King;*/
+}
+
+.single-post{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    /*background-color: #f3dfde;*/
+}
+
+.single-post:hover,
+.single-post:focus {
+    text-decoration: none;
+    background-color: #2e3135;
+    /*border: none;*/
+}
+
+.tab-content{
+    padding-left: 10px;
+}
+
+#nsfw{
+    color: #e1403b;
+}
+
+
+
+/* LINKS */
+a:visited,
+a:visited p{
+    color: #966842;
+}
+
+a:hover{
+    text-decoration: #5b687d underline;
+}
 
