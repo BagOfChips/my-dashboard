@@ -61,7 +61,7 @@ function fetchTopHotPosts(subreddit, limit, callback){
         }else{
             // failure to fetch >> error message generated
             console.log("fetchTopHotPosts WENT WRONG");
-            callback(hotPosts);
+            callback(null);
         }
 
     });

@@ -8,7 +8,12 @@ $(document).ready(function(){
         limit: 25
     }, function(fetchedPosts){
 
-        // todo: service should check if fetchedPosts is error
+        /**
+         * Service will send null if failed to fetch data
+         *  todo: display appropriate error message
+         *
+         * @type {Array}
+         */
 
         // parse returned data
         var trimmedPosts = trimPosts(fetchedPosts);
@@ -24,23 +29,37 @@ $(document).ready(function(){
 
 
 /**
- * on mouseOver "near" top 10% of screen height
- *  AND left 45% of screen (~5 / 12)
- * DO reveal nav bar
+ * On mouseOver "near" top 10% of screen height AND left 45% of screen (~5 / 12)
+ *  reveal nav bar
  *
  * @param event
  */
+var navToggle = false;
 function toggleNavBar(event){
     var windowWidth = $(window).width();
+    // windowHeight not used, nav bar always 24px
     //var windowHeight = $(window).height();
     var mouseX = event.clientX;
     var mouseY = event.clientY;
 
-    // todo: animate this
-    if(mouseX <= windowWidth * 0.44 && mouseY <= 30){
-        $("#nav").css("display", "block");
-    }else{
-        $("#nav").css("display", "none");
+    if(mouseX <= windowWidth * 0.44 && mouseY <= 26 && !navToggle){
+        $("#nav").animate({
+            marginTop: 0,
+            opacity: "1.0"
+        }, 500, "swing");
+
+        // callback not working? but toggling the flag here works though
+        navToggle = true;
+        //console.log(navToggle);
+
+    }else if(navToggle && (mouseX > windowWidth * 0.44 || mouseY > 30)){
+        $("#nav").animate({
+            opacity: "0.0",
+            marginTop: "-24px"
+        }, 500, "swing");
+
+        navToggle = false;
+        //console.log(navToggle);
     }
 }
 
@@ -163,12 +182,12 @@ function trimPosts(posts){
             author: postData.author,
             title: postData.title,
             subreddit: postData.subreddit_name_prefixed,
-            url: postData.url,
             score: postData.score,
             nsfw: postData.over_18,
             comments: postData.num_comments,
             permalink: postData.permalink,
-            url: postData.url
+            url: postData.url,
+            created: postData.created_utc // todo: convert epoch to a human readable date
         };
 
         if(post.nsfw == false){
