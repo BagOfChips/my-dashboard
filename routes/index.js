@@ -10,6 +10,8 @@ const r = new snoowrap({
     refreshToken: process.env.reddit_refreshToken
 });
 
+var timeAgo = require('epoch-to-timeago').timeAgo;
+
 
 router.use(function timeLog(req, res, next){
     //console.log("time: ", Date.now());
@@ -49,6 +51,9 @@ function fetchTopHotPosts(subreddit, limit, callback){
         limit: limit
     }).then(hotPosts => {
 
+        // convert epoch times to readable human string
+        hotPosts = convertRedditListEpochTimes(hotPosts);
+
         var numberHotPosts = hotPosts.length;
         console.log("Number of hotPosts fetched: " + numberHotPosts);
         console.log(hotPosts);
@@ -67,9 +72,15 @@ function fetchTopHotPosts(subreddit, limit, callback){
     });
 }
 
-
-
-
+function convertRedditListEpochTimes(posts){
+    var now = new Date().getTime();
+    console.log("now: " + now);
+    for(var i = 0; i < posts.length; i++){
+        //console.log("created: " + posts[i].created_utc);
+        posts[i].created_utc = timeAgo(posts[i].created_utc * 1000, now);
+    }
+    return posts;
+}
 
 
 

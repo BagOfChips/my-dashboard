@@ -92,7 +92,7 @@ html, body {
     overflow-y: auto;
     height: 100%;
     flex: 1;
-    padding-top: 20px;
+    padding-top: 30px;
     padding-bottom: 20px;
 }
 
@@ -138,6 +138,8 @@ html, body {
 
     opacity: 0;
     margin-top: -24px;
+    position: absolute;
+    width: 100%;
 }
 
 .nav > li {
@@ -273,8 +275,13 @@ p, a, h3, h4{
     padding-left: 10px;
 }
 
-#nsfw{
+.nsfw {
+    padding-right: 35px;
+}
+
+.nsfw p{
     color: #e1403b;
+    text-align: right;
 }
 
 

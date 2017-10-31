@@ -1,8 +1,6 @@
 
 $(document).ready(function(){
 
-    // todo: animate loading page
-
     // fetch front page of reddit
     $.get("/redditRall", {
         limit: 25
@@ -130,6 +128,10 @@ function toHTML(redditPosts){
                         + "</a>"
                     + "</div>"
 
+                    + "<div class=\"col-md-3 col-xs-3\">"
+                        + "<p>" + post.created + "</p>"
+                    + "</div>"
+
                     + "<div class=\"col-md-3 col-xs-3 bold\">"
                         + "<a href=\"https://www.reddit.com/" + post.subreddit + "\">"
                             + "<p>" + post.subreddit + "</p>"
@@ -141,9 +143,11 @@ function toHTML(redditPosts){
                             + "<p>" + post.comments + " comments</p>"
                         + "</a>"
                     + "</div>"
+                + "</div>"
 
-                    + "<div class=\"col-md-3 col-xs-3 bold\">"
-                        + "<p id=\"nsfw\">" + post.nsfw + "</p>"
+                + "<div class=\"row extra-post-info\">"
+                    + "<div class=\"col-md-3 col-xs-3 col-md-offset-9 col-xs-offset-9 bold nsfw\">"
+                        + "<p>" + post.nsfw + "</p>"
                     + "</div>"
                 + "</div>"
             + "</div>"
