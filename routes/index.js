@@ -43,10 +43,6 @@ function fetchTopHotPosts(subreddit, limit, callback){
     console.log("subreddit: " + subreddit);
     console.log("limit: " + limit);
 
-    /*if(limit % 10 != 0){
-        console.log("input limit: " + limit + " NOT DIVISIBLE BY 10");
-    }*/
-
     r.getSubreddit(subreddit).getHot({
         limit: limit
     }).then(hotPosts => {
@@ -62,6 +58,7 @@ function fetchTopHotPosts(subreddit, limit, callback){
             hotPosts = hotPosts.slice(numberHotPosts - 25);
             callback(hotPosts);
         }else if(numberHotPosts >= limit - 25){
+            hotPosts = hotPosts.slice(numberHotPosts - (limit - 25));
             callback(hotPosts);
         }else{
             // failure to fetch >> error message generated
