@@ -17,11 +17,23 @@ $(document).ready(function(){
         var trimmedPosts = trimPosts(fetchedPosts);
         var formattedPosts = toHTML(trimmedPosts);
         displayPosts(formattedPosts);
+        fetchedRedditPostsCount += formattedPosts.length;
 
     });
 
     // hide nav bar if not hovered over
     document.addEventListener("mousemove", toggleNavBar);
+
+    // todo: on scroll to bottom of div, fetch 25 more posts
+    /*$("#left-column-0").mCustomScrollbar({
+        callbacks: {
+            onTotalScroll: function(){
+                console.log("Scrolled to bottom");
+            }
+        }
+
+    });*/
+
 });
 
 
@@ -61,9 +73,14 @@ function toggleNavBar(event){
     }
 }
 
-
+/**
+ * .html() will overwrite everything
+ *  We just want to append the returned results
+ *
+ * @param formattedPosts
+ */
 function displayPosts(formattedPosts){
-    $("#tab0").html(formattedPosts);
+    $("#tab0").append(formattedPosts);
 }
 
 
@@ -157,7 +174,7 @@ function toHTML(redditPosts){
         posts.push(formattedPost);
     }
 
-    console.log(posts.toString());
+    //console.log(posts.toString());
     return posts;
 }
 
@@ -202,7 +219,7 @@ function trimPosts(posts){
         trimmedPosts.push(post);
     }
 
-    printObjectArray(trimmedPosts);
+    //printObjectArray(trimmedPosts);
     return trimmedPosts;
 }
 

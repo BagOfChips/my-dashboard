@@ -29,13 +29,13 @@ router.get('/redditRall', function(req, res){
     console.log("typeof(limit): " + typeof limit);
 
     // have to wait generating before we send
-    fetch10HotPostsAll(limit, function(hotPosts){
+    fetch25HotPostsAll(limit, function(hotPosts){
         res.send(hotPosts);
     });
 
 });
 
-function fetch10HotPostsAll(limit, callback){
+function fetch25HotPostsAll(limit, callback){
     return fetchTopHotPosts('all', limit, callback);
 }
 
@@ -56,12 +56,12 @@ function fetchTopHotPosts(subreddit, limit, callback){
 
         var numberHotPosts = hotPosts.length;
         console.log("Number of hotPosts fetched: " + numberHotPosts);
-        console.log(hotPosts);
+        //console.log(hotPosts);
 
-        if(numberHotPosts > limit){
-            hotPosts = hotPosts.slice(numberHotPosts - limit);
+        if(numberHotPosts = limit){
+            hotPosts = hotPosts.slice(numberHotPosts - 25);
             callback(hotPosts);
-        }else if(numberHotPosts >= 1){
+        }else if(numberHotPosts >= limit - 25){
             callback(hotPosts);
         }else{
             // failure to fetch >> error message generated
