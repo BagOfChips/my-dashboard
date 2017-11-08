@@ -27,22 +27,29 @@
 
     // copy object
     var redditScrollSettings = JSON.parse(JSON.stringify(defaultScrollSettings));
+
     redditScrollSettings.callbacks.onTotalScroll = function(){
         console.log("Scrolled to the bottom - fetching 25 more posts");
 
-        if(fetchedRedditPostsCount < 100){
-            $.get("/redditRall", {
-                limit: fetchedRedditPostsCount + 25
+        // todo: get which tab is selected first
+        console.log("tabSelected: " + $.tabSelected);
+        console.log("fetchedRedditPostsCount[tabSelected]: " + $.fetchedRedditPostsCount[$.tabSelected]);
+
+        if($.fetchedRedditPostsCount[$.tabSelected] < 100){
+            $.get("/fetchHot", {
+                // get current subreddit "limit"
+                limit: $.fetchedRedditPostsCount[$.tabSelected] + 25,
+                subreddit: $.tabSelected
             }, function(fetchedPosts){
                 var trimmedPosts = trimPosts(fetchedPosts);
                 var formattedPosts = toHTML(trimmedPosts);
                 displayPosts(formattedPosts);
-                fetchedRedditPostsCount += formattedPosts.length;
+                $.fetchedRedditPostsCount[$.tabSelected] += formattedPosts.length;
 
-                console.log("fetchedRedditPostsCount: " + fetchedRedditPostsCount);
+                //console.log("fetchedRedditPostsCount: " + fetchedRedditPostsCount);
             });
         }else{
-            // todo: stop searching for too many things
+            // stop searching for too many things
             console.log("100 posts fetched limit reached");
         }
 
@@ -56,4 +63,14 @@
     });
 })(jQuery);
 
-var fetchedRedditPostsCount = 0;
+
+// jquery global variables
+$.tabSelected = "r/all";
+
+$.fetchedRedditPostsCount = {
+    'r/all': 0,
+    'r/pics': 0,
+    'r/programmerHumor': 0,
+    'r/2007scape': 0
+};
+

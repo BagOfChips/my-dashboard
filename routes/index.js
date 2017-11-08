@@ -23,6 +23,23 @@ router.get('/', function(req, res, next){
     res.render('index', {title: 'Express'});
 });
 
+
+
+// implement multiple tabs
+router.get("/fetchHot", function(req, res){
+    var subreddit = req.query.subreddit;
+    var limit = parseInt(req.query.limit);
+    console.log("limit: " + limit);
+    console.log("typeof(limit): " + typeof limit);
+
+    // have to wait generating before we send
+    fetchTopHotPosts(subreddit, limit, function(hotPosts){
+        res.send(hotPosts);
+    });
+
+});
+
+
 router.get('/redditRall', function(req, res){
     var limit = parseInt(req.query.limit);
     console.log("limit: " + limit);

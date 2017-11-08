@@ -1,7 +1,7 @@
 
 $(document).ready(function(){
 
-    // fetch front page of reddit
+    // fetch front page of reddit - done when loading page
     $.get("/redditRall", {
         limit: 25
     }, function(fetchedPosts){
@@ -17,26 +17,34 @@ $(document).ready(function(){
         var trimmedPosts = trimPosts(fetchedPosts);
         var formattedPosts = toHTML(trimmedPosts);
         displayPosts(formattedPosts);
-        fetchedRedditPostsCount += formattedPosts.length;
+        $.fetchedRedditPostsCount[$.tabSelected] += formattedPosts.length;
 
     });
 
     // hide nav bar if not hovered over
     document.addEventListener("mousemove", toggleNavBar);
 
-    // todo: on scroll to bottom of div, fetch 25 more posts
-    /*$("#left-column-0").mCustomScrollbar({
-        callbacks: {
-            onTotalScroll: function(){
-                console.log("Scrolled to bottom");
-            }
-        }
+    $(document.getElementById("r/all")).click(function(){
+         $.tabSelected = this.id;
+         console.log("tabSelected: " + $.tabSelected);
+    });
 
-    });*/
+    $(document.getElementById("r/programmerHumor")).click(function(){
+        $.tabSelected = this.id;
+        console.log("tabSelected: " + $.tabSelected);
+    });
+
+    $(document.getElementById("r/fitness")).click(function(){
+        $.tabSelected = this.id;
+        console.log("tabSelected: " + $.tabSelected);
+    });
+
+    $(document.getElementById("r/2007scape")).click(function(){
+        $.tabSelected = this.id;
+        console.log("tabSelected: " + $.tabSelected);
+    });
 
 });
-
-
 
 /**
  * On mouseOver "near" top 10% of screen height AND left 45% of screen (~5 / 12)
@@ -123,9 +131,9 @@ function toHTML(redditPosts){
         var formattedPost = "";
 
         if(i % 2 !== 0){
-            formattedPost += "<div class=\"row border-bottom border-top single-post\" id=\"rAll-posts" + i + "\">"
+            formattedPost += "<div class=\"row border-bottom border-top single-post\">"
         }else{
-            formattedPost += "<div class=\"row single-post\" id=\"rAll-posts" + i + "\">"
+            formattedPost += "<div class=\"row single-post\">"
         }
 
         formattedPost +=
