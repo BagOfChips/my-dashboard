@@ -16,35 +16,77 @@ $(document).ready(function(){
         // parse returned data
         var trimmedPosts = trimPosts(fetchedPosts);
         var formattedPosts = toHTML(trimmedPosts);
-        displayPosts(formattedPosts);
-        $.fetchedRedditPostsCount[$.tabSelected] += formattedPosts.length;
+        displayPosts(formattedPosts, $.tabSelected);
 
+        $.fetchedRedditPostsCount[$.tabSelected] += formattedPosts.length;
+        $.tabLoaded[$.tabSelected] = true;
     });
 
     // hide nav bar if not hovered over
     document.addEventListener("mousemove", toggleNavBar);
+
+
+    // todo: how to spawn the following click listeners upon custom user defined subreddit?
+    // todo: look at addEventListener()
 
     $(document.getElementById("r/all")).click(function(){
          $.tabSelected = this.id;
          console.log("tabSelected: " + $.tabSelected);
     });
 
+    $(document.getElementById("r/pics")).click(function(){
+        $.tabSelected = this.id;
+        console.log("tabSelected: " + $.tabSelected);
+
+        // will only load first 25 posts if not already fetched
+        loadFirst25Posts();
+    });
+
     $(document.getElementById("r/programmerHumor")).click(function(){
         $.tabSelected = this.id;
         console.log("tabSelected: " + $.tabSelected);
+        loadFirst25Posts();
+
     });
 
     $(document.getElementById("r/fitness")).click(function(){
         $.tabSelected = this.id;
         console.log("tabSelected: " + $.tabSelected);
+        loadFirst25Posts();
+
     });
 
     $(document.getElementById("r/2007scape")).click(function(){
         $.tabSelected = this.id;
         console.log("tabSelected: " + $.tabSelected);
-    });
+        loadFirst25Posts();
 
+    });
 });
+
+function loadFirst25Posts(){
+    if($.tabLoaded[$.tabSelected] == false){
+        // fetch and display FIRST 25 posts from THIS subreddit
+        loadPosts(25);
+    }
+}
+
+function loadPosts(limit){
+    $.get("/fetchHot", {
+        limit: limit,
+        subreddit: $.tabSelected.slice(2)
+    }, function(fetchedPosts){
+
+        // parse returned data
+        var trimmedPosts = trimPosts(fetchedPosts);
+        var formattedPosts = toHTML(trimmedPosts);
+        displayPosts(formattedPosts, $.tabSelected);
+
+        $.fetchedRedditPostsCount[$.tabSelected] += formattedPosts.length;
+        $.tabLoaded[$.tabSelected] = true;
+    });
+}
+
 
 /**
  * On mouseOver "near" top 10% of screen height AND left 45% of screen (~5 / 12)
@@ -60,7 +102,7 @@ function toggleNavBar(event){
     var mouseX = event.clientX;
     var mouseY = event.clientY;
 
-    if(mouseX <= windowWidth * 0.44 && mouseY <= 26 && !navToggle){
+    if(mouseX <= windowWidth * 0.44 && mouseY <= 40 && !navToggle){
         $("#nav").animate({
             marginTop: 0,
             opacity: "1.0"
@@ -70,10 +112,10 @@ function toggleNavBar(event){
         navToggle = true;
         //console.log(navToggle);
 
-    }else if(navToggle && (mouseX > windowWidth * 0.44 || mouseY > 30)){
+    }else if(navToggle && (mouseX > windowWidth * 0.44 || mouseY > 40)){
         $("#nav").animate({
             opacity: "0.0",
-            marginTop: "-24px"
+            marginTop: "-40px"
         }, 500, "swing");
 
         navToggle = false;
@@ -86,9 +128,23 @@ function toggleNavBar(event){
  *  We just want to append the returned results
  *
  * @param formattedPosts
+ * @param subreddit
  */
-function displayPosts(formattedPosts){
-    $("#tab0").append(formattedPosts);
+function displayPosts(formattedPosts, subreddit){
+    console.log("Displaying posts to: " + "#" + subreddit.slice(2) + "-body");
+
+    /**
+     * Apparently, I could not select #r/pics-body for some reason
+     *  even though #r/all-body works
+     *
+     * Might be because r/all-body was NOT
+     *  display: none
+     *
+     * Renamed *-body ids without "r/" and it works
+     */
+
+    $(document.getElementById(subreddit.slice(2) + "-body")).append(formattedPosts);
+    //$("#" + "r\\/" + subreddit.slice(2) + "-body").append(formattedPosts);
 }
 
 
@@ -99,31 +155,6 @@ function displayPosts(formattedPosts){
  * @returns {Array}
  */
 function toHTML(redditPosts){
-    /**
-     <div class="row border-bottom" id="rAll-posts0">
-        <div class="col-md-2 col-xs-2 center-upvotes upvote-styling">
-            <p>upboats here</p>
-        </div>
-
-        <div class="col-md-10 col-xs-10">
-            <p class="reddit-title">title ... skrrr skrrr</p>
-
-            <div class="row extra-post-info">
-                <div class="col-md-3 col-xs-4">
-                    <p>author / username</p>
-                </div>
-
-                <div class="col-md-3 col-xs-4">
-                    <p>subreddit</p>
-                </div>
-
-                <div class="col-md-3 col-xs-4">
-                    <p>###### comments</p>
-                </div>
-            </div>
-        </div>
-     </div>
-     */
 
     var posts = [];
     for(var i = 0; i < redditPosts.length; i++){

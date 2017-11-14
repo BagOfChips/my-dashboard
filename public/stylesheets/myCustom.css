@@ -92,7 +92,7 @@ html, body {
     overflow-y: auto;
     height: 100%;
     flex: 1;
-    padding-top: 30px;
+    padding-top: 40px;
     padding-bottom: 20px;
 }
 
@@ -131,16 +131,20 @@ html, body {
     font-size: 18px;
     font-style: italic;
     padding-left: 0;
+    padding-bottom: 5px;
     margin-bottom: 0;
     list-style: none;
-    height: 24px;
+
+    height: 40px;
+
     background-color: #bababa;
 
     opacity: 0;
-    margin-top: -24px;
+    margin-top: -40px;
     position: absolute;
     width: 100%;
 }
+
 
 .nav > li {
     position: relative;
@@ -168,6 +172,7 @@ html, body {
 
 .nav-tabs {
     border-bottom: none;
+    overflow: auto;
 }
 
 .nav-tabs > li {
@@ -196,6 +201,9 @@ html, body {
     border: 0;
     border-bottom-color: transparent;
 }
+
+
+/* TABS OVERFLOW */
 
 
 

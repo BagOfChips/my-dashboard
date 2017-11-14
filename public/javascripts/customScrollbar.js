@@ -43,7 +43,7 @@
             }, function(fetchedPosts){
                 var trimmedPosts = trimPosts(fetchedPosts);
                 var formattedPosts = toHTML(trimmedPosts);
-                displayPosts(formattedPosts);
+                displayPosts(formattedPosts, $.tabSelected);
                 $.fetchedRedditPostsCount[$.tabSelected] += formattedPosts.length;
 
                 //console.log("fetchedRedditPostsCount: " + fetchedRedditPostsCount);
@@ -52,11 +52,16 @@
             // stop searching for too many things
             console.log("100 posts fetched limit reached");
         }
-
-
     };
 
+    var navScrollSettings = JSON.parse(JSON.stringify(defaultScrollSettings));
+
+    navScrollSettings.axis = "x";
+    //navScrollSettings.scrollbarPosition = "outside";
+    navScrollSettings.advanced.autoExpandScrollbar = true;
+
     $(window).on("load", function(){
+        //$("#nav").mCustomScrollbar(navScrollSettings);
         $("#left-column-0").mCustomScrollbar(redditScrollSettings);
         $("#right-column-0").mCustomScrollbar(defaultScrollSettings);
         $("#right-column-1").mCustomScrollbar(defaultScrollSettings);
@@ -71,6 +76,16 @@ $.fetchedRedditPostsCount = {
     'r/all': 0,
     'r/pics': 0,
     'r/programmerHumor': 0,
-    'r/2007scape': 0
+    'r/2007scape': 0,
+    'r/fitness': 0
 };
 
+// we can just use the variable above
+// 0 = false, otherwise true
+$.tabLoaded = {
+    'r/all': false,
+    'r/pics': false,
+    'r/programmerHumor': false,
+    'r/2007scape': false,
+    'r/fitness': false
+};
