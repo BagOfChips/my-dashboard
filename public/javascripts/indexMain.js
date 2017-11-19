@@ -62,7 +62,109 @@ $(document).ready(function(){
         loadFirst25Posts();
 
     });
+
+    /**
+     * When we click the on the .comment-link class,
+     *  we want to get its id and fetch top 100 comments
+     *
+     * class .comment-link dynamically added, use following structure below
+     */
+    $(document).on("click", "p.comment-link", function(){
+        var postId = this.id;
+        console.log("click on .comment-link with id: " + postId);
+
+        var getCommentsParameters = {
+            limit: 10,
+            depth: 4
+        };
+
+        getComments(postId, getCommentsParameters.limit, getCommentsParameters.depth);
+
+    });
+
 });
+
+function getComments(postId, limit, depth){
+    $.get("/comments", {
+        postId: postId,
+        limit: limit,
+        depth: depth
+    }, function(data){
+
+        // todo: parse returned data here
+        /**
+         * 1. trim comments - remove unnecessary info - may need to implement BFS first
+         * 2. parse into HTML
+         *  2.1 need to implement some sort of BFS to traverse tree of comments
+         *  2.2 string them together formatting
+         * 3. display comments on right hand side column
+         *
+         */
+
+        var comments = data.comments;
+        console.log(comments);
+
+        for(i = 0; i < comments.length; i++){
+            commentsBFS(comments[i]);
+        }
+    });
+}
+
+// unused
+function removeCommentKeys(keysToRemove, object){
+    for(var i = 0; i < keysToRemove.length; i++){
+        for(prop in object){
+            if(prop == keysToRemove[i]){
+                delete object[prop];
+            }else if(typeof object[prop] == "object"){
+                removeCommentKeys(keysToRemove, object[prop]);
+            }
+        }
+    }
+}
+
+// unused
+function renameKeyFromObject(oldKey, newKey, object){
+    object[newKey] = object[oldKey];
+    delete object[oldKey];
+    return object;
+}
+
+/**
+ * We want to perform BFS on a list of comments
+ */
+function commentsBFS(comment){
+    /** Javascript Queues - note that shift() might be O(n)
+     *
+     * var q = [];
+     * q.push(2);
+     * q.push(5);
+     *  // q is [2, 5]
+     *
+     * var firstOut = q.shift();
+     *  // q becomes [5]
+     *  // firstOut is 2
+     *
+     */
+
+    var queue = [];
+    queue.push(comment);
+
+    while(queue.length > 0){
+        var node = queue.shift();
+        var nodeId = node["id"];
+
+
+        for(var i = 0; i < node["replies"].length; i++){
+            queue.push(node["replies"][i]);
+        }
+    }
+}
+
+function trimComment(comment){
+
+}
+
 
 function loadFirst25Posts(){
     if($.tabLoaded[$.tabSelected] == false){
@@ -194,9 +296,10 @@ function toHTML(redditPosts){
                         + "</a>"
                     + "</div>"
 
-                    + "<div class=\"col-md-3 col-xs-3 bold\">"
-                        + "<a href=\"https://www.reddit.com/" + post.permalink + "\">"
-                            + "<p>" + post.comments + " comments</p>"
+                    + "<div class=\"col-md-3 col-xs-3 bold \">"
+                        //+ "<a href=\"https://www.reddit.com/" + post.permalink + "\">"
+                        + "<a>"
+                            + "<p class=\"comment-link\" id=\"" + post.id + "\">" + post.comments + " comments</p>"
                         + "</a>"
                     + "</div>"
                 + "</div>"
@@ -247,7 +350,7 @@ function trimPosts(posts){
             comments: postData.num_comments,
             permalink: postData.permalink,
             url: postData.url,
-            created: postData.created_utc // todo: convert epoch to a human readable date
+            created: postData.created_utc // to convert epoch to a human readable date
         };
 
         if(post.nsfw == false){

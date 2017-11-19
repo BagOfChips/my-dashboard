@@ -244,7 +244,7 @@ p, a, h3, h4{
 }
 
 .extra-post-info p{
-    margin-bottom: 5px;
+    margin-bottom: 0;
     color: #e8a64a;
 
     text-overflow: ellipsis;
@@ -302,5 +302,16 @@ a:visited p{
 
 a:hover{
     text-decoration: #5b687d underline;
+}
+
+
+
+/* COMMENT LINK */
+.comment-link{
+    opacity: 1;
+}
+
+.comment{
+    opacity: 1;
 }
 
