@@ -78,13 +78,16 @@ $(document).ready(function(){
             depth: 4
         };
 
-        getComments(postId, getCommentsParameters.limit, getCommentsParameters.depth);
-
+        // need to display as tree structure
+        var commentsArray = getComments(postId, getCommentsParameters.limit, getCommentsParameters.depth);
+        console.log(commentsArray);
     });
 
 });
 
 function getComments(postId, limit, depth){
+    var htmlToOrder = [];
+
     $.get("/comments", {
         postId: postId,
         limit: limit,
@@ -102,12 +105,14 @@ function getComments(postId, limit, depth){
          */
 
         var comments = data.comments;
-        console.log(comments);
+        //console.log(comments);
 
-        for(i = 0; i < comments.length; i++){
-            commentsBFS(comments[i]);
+        for(var i = 0; i < comments.length; i++){
+            htmlToOrder.push(commentsBFS(comments[i]));
         }
     });
+
+    return htmlToOrder;
 }
 
 // unused
@@ -147,24 +152,59 @@ function commentsBFS(comment){
      *
      */
 
+    var htmlOutput = []; // first and last items are Strings
+                         // rest are objects
+    htmlOutput.push("<div class=\"comment-box\">");
+
     var queue = [];
     queue.push(comment);
 
     while(queue.length > 0){
         var node = queue.shift();
-        var nodeId = node["id"];
 
+        htmlOutput.push({
+            parentId: node.parentId, // root comment has 'undefined' parentId
+            html:
+                "<div class=\"comment\" id=\"" +node["id"] + "\">" +
+                    "<div class=\"comment-headers\">" +
+                        "<div class=\"comment-username\">" +
+                            "<p>" +
+                                node["author"] +
+                            "</p>" +
+                        "</div>" +
+
+                        "<div class=\"comment-score\">" +
+                            "<p>" +
+                                node["score"] +
+                            "</p>" +
+                        "</div>" +
+
+                        "<div class=\"comment-time\">" +
+                            "<p>" +
+                                node["created_utc"] +
+                            "</p>" +
+                        "</div>" +
+                    "</div>" +
+
+                    "<div class=\"comment-body\">" +
+                        "<p>" +
+                            node["body"] +
+                        "</p>" +
+                    "</div>" +
+
+                // we want to append replies (subsequent comments here)
+                "</div>"
+        });
 
         for(var i = 0; i < node["replies"].length; i++){
+            node["replies"][i].parentId = node["id"];
             queue.push(node["replies"][i]);
         }
     }
+
+    htmlOutput.push("</div>");
+    return htmlOutput;
 }
-
-function trimComment(comment){
-
-}
-
 
 function loadFirst25Posts(){
     if($.tabLoaded[$.tabSelected] == false){
