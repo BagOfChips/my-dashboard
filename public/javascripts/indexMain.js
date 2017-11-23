@@ -79,13 +79,80 @@ $(document).ready(function(){
         };
 
         // need to display as tree structure
-        var commentsArray = getComments(postId, getCommentsParameters.limit, getCommentsParameters.depth);
-        console.log(commentsArray);
-    });
+        getComments(
+            postId,
+            getCommentsParameters.limit,
+            getCommentsParameters.depth,
+            function(commentsArray){
+                console.log(commentsArray);
 
+                /**
+                 * Why is this 0?
+                 *
+                 * Possible reasons:
+                 *  1. some wacky async <-- this one
+                 *  2. javascript is wack <-- this one too
+                 */
+                console.log("commmentsArray length: " + commentsArray.length);
+
+                for(var i = 0; i < commentsArray.length; i++){
+                    //console.log("attempting to display comment tree: " + i);
+                    displayComments(commentsArray[i]);
+                }
+            }
+        );
+
+
+    });
 });
 
-function getComments(postId, limit, depth){
+/**
+ * For each root comment
+ *  1. append an empty .comment-box
+ *  2. append root comment inside .comment-box
+ *      with id=root_comment_id + "-box"
+ *  3. for rest of the values,
+ *      append each value to the parentId element
+ *
+ */
+function displayComments(commentsArray){
+    var commentBox = commentsArray[0];
+    var rootComment = commentsArray[1];
+
+    $(document.getElementById("display-comments"))
+        .append(commentBox); // commentBox has an id=root_comment_id + "-box"
+
+    //console.log("#" + rootComment["id"] + "-box");
+
+    waitForElementToDisplay("#" + rootComment.id + "-box", 10, function(comment){
+        $(document.getElementById(comment.id + "-box")).append(comment.html);
+
+    }, rootComment);
+
+    for(var i = 2; i < commentsArray.length; i++){
+        waitForElementToDisplay("#" + commentsArray[i].parentId, 10, function(comment){
+            $(document.getElementById(comment.parentId)).append(comment.html)
+        }, commentsArray[i]);
+    }
+}
+
+// unused
+function waitForElementToDisplay(selector, time, f, comment){
+    if(document.querySelector(selector) != null){
+        f(comment);
+        return;
+    }else{
+        setTimeout(function(){
+
+            console.log("selector not ready yet, retrying in " + time + " ms...");
+
+            waitForElementToDisplay(selector, time);
+        }, time);
+    }
+}
+
+
+function getComments(postId, limit, depth, callback){
     var htmlToOrder = [];
 
     $.get("/comments", {
@@ -110,9 +177,10 @@ function getComments(postId, limit, depth){
         for(var i = 0; i < comments.length; i++){
             htmlToOrder.push(commentsBFS(comments[i]));
         }
-    });
 
-    return htmlToOrder;
+        // callback here - get is async
+        callback(htmlToOrder);
+    });
 }
 
 // unused
@@ -152,9 +220,8 @@ function commentsBFS(comment){
      *
      */
 
-    var htmlOutput = []; // first and last items are Strings
-                         // rest are objects
-    htmlOutput.push("<div class=\"comment-box\">");
+    var htmlOutput = [];
+    htmlOutput.push("<div class=\"comment-box row\" id=\"" + comment["id"] + "-box\"></div>");
 
     var queue = [];
     queue.push(comment);
@@ -163,33 +230,36 @@ function commentsBFS(comment){
         var node = queue.shift();
 
         htmlOutput.push({
+            id: node["id"],
             parentId: node.parentId, // root comment has 'undefined' parentId
             html:
-                "<div class=\"comment\" id=\"" +node["id"] + "\">" +
-                    "<div class=\"comment-headers\">" +
-                        "<div class=\"comment-username\">" +
+                "<div class=\"comment row\" id=\"" + node["id"] + "\">" +
+                    "<div class=\"comment-headers col-xs-12 col-md-12\">" +
+                        "<div class=\"comment-username col-xs-3 col-md-3\">" +
                             "<p>" +
                                 node["author"] +
                             "</p>" +
                         "</div>" +
 
-                        "<div class=\"comment-score\">" +
+                        "<div class=\"comment-score col-xs-2 col-md-2\">" +
                             "<p>" +
                                 node["score"] +
                             "</p>" +
                         "</div>" +
 
-                        "<div class=\"comment-time\">" +
+                        "<div class=\"comment-time col-xs-7 col-md-7\">" +
                             "<p>" +
                                 node["created_utc"] +
                             "</p>" +
                         "</div>" +
                     "</div>" +
 
-                    "<div class=\"comment-body\">" +
-                        "<p>" +
-                            node["body"] +
-                        "</p>" +
+                    "<div class=\"comment-body row\">" +
+                        "<div class=\"col-xs-12 col-md-12\">" +
+                            "<p>" +
+                                node["body"] +
+                            "</p>" +
+                        "</div>" +
                     "</div>" +
 
                 // we want to append replies (subsequent comments here)
@@ -202,7 +272,6 @@ function commentsBFS(comment){
         }
     }
 
-    htmlOutput.push("</div>");
     return htmlOutput;
 }
 

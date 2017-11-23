@@ -92,11 +92,12 @@ html, body {
     overflow-y: auto;
     height: 100%;
     flex: 1;
+
     padding-top: 40px;
     padding-bottom: 20px;
 }
 
-#right-column-0, #right-column-1 {
+/*#right-column-0, #right-column-1 {
     overflow-y: auto;
     flex: 2;
 }
@@ -107,6 +108,17 @@ html, body {
 
 #right-column-1 {
     height: 67%;
+}*/
+
+
+/* for now we only display right-column-0 */
+#right-column-0{
+    overflow-y: auto;
+    height: 100%;
+    flex: 2;
+
+    padding-top: 40px;
+    padding-bottom: 20px;
 }
 
 /* PADDING */
@@ -261,6 +273,14 @@ p, a, h3, h4{
     background-color: #3a3d41;
 }
 
+.right-well{
+    /*padding-top: 10px;
+    padding-right: 5px;
+    padding-left: 15px;*/
+    padding: 0;
+    background-color: #484d53;
+}
+
 .bold{
     font-weight: bold;
     /*font-family: King;*/
@@ -307,11 +327,23 @@ a:hover{
 
 
 /* COMMENT LINK */
-/*.comment-link{
-    opacity: 1;
+
+/* COMMENT */
+.comment{
+    margin: 0;
+    padding: 10px;
 }
 
-.comment{
-    opacity: 1;
-}*/
+.comment-body{
+    margin: 0;
+}
+
+.comment-headers div{
+    padding-left: 0;
+}
+
+/* scroll bars */
+
+
+
 

@@ -64,7 +64,7 @@
         //$("#nav").mCustomScrollbar(navScrollSettings);
         $("#left-column-0").mCustomScrollbar(redditScrollSettings);
         $("#right-column-0").mCustomScrollbar(defaultScrollSettings);
-        $("#right-column-1").mCustomScrollbar(defaultScrollSettings);
+        //$("#right-column-1").mCustomScrollbar(defaultScrollSettings);
     });
 })(jQuery);
 
