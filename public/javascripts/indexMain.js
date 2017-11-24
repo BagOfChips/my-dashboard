@@ -74,8 +74,8 @@ $(document).ready(function(){
         console.log("click on .comment-link with id: " + postId);
 
         var getCommentsParameters = {
-            limit: 10,
-            depth: 4
+            limit: 5,
+            depth: 2
         };
 
         // need to display as tree structure
@@ -235,7 +235,7 @@ function commentsBFS(comment){
                             "</p>" +
                         "</div>" +
 
-                        "<div class=\"comment-score col-xs-2 col-md-2\">" +
+                        "<div class=\"comment-score col-xs-2 col-md-2 bold\">" +
                             "<p>" +
                                 node["score"] +
                             "</p>" +
@@ -249,8 +249,8 @@ function commentsBFS(comment){
                     "</div>" +
 
                     "<div class=\"comment-body row\">" +
-                        "<div class=\"col-xs-12 col-md-12\">" +
-                            "<p>" +
+                        "<div class=\"col-xs-12 col-md-12 bold\">" +
+                            "<p class=\"large-comment-font\">" +
                                 node["body"] +
                             "</p>" +
                         "</div>" +

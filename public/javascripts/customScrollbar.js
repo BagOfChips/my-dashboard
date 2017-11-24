@@ -22,12 +22,13 @@
                 console.log("Custom scrollbar initialized");
             }
         },
-        theme: "light-thin"
+        theme: "dark-thin",
     };
 
     // copy object
     var redditScrollSettings = JSON.parse(JSON.stringify(defaultScrollSettings));
 
+    redditScrollSettings.theme = "light-thin";
     redditScrollSettings.callbacks.onTotalScroll = function(){
         console.log("Scrolled to the bottom - fetching 25 more posts");
 

@@ -123,8 +123,7 @@ html, body {
 }
 
 #right-column-0 p{
-    color: #3b4550;
-    font-size: 14px;
+    color: #252d37;
     margin-bottom: 0;
 }
 
@@ -335,9 +334,11 @@ a:visited p{
 
 a:hover{
     text-decoration: #5b687d underline;
-    cursor: hand;
 }
 
+a p:hover{
+    cursor: pointer;
+}
 
 /* EXTRA POST INFO */
 
@@ -372,21 +373,34 @@ a:hover{
 
     /* todo: remove later */
     /*border: 1px black solid;*/
-    border-left: 1px black solid;
+}
+
+.comment:hover{
+    border-left: 2px #5b687d solid;
 }
 
 .comment-body{
     margin: 0;
 }
 
+.large-comment-font{
+    font-size: 16px;
+}
+
 .comment-headers div{
     padding-left: 0;
+}
+
+.comment-box{
+    margin-left: 0;
+    margin-right: 16px;
 }
 
 /* scroll bars */
 #mCSB_2_container{
     margin-right: 16px;
 }
+
 
 
 /* GRADIENT */
@@ -407,10 +421,10 @@ a:hover{
 }
 
 .peach-gradient{
-    background: #ffced7; /* For browsers that do not support gradients */
-    background: -webkit-linear-gradient(left top, #ffced7, #e8c5e9); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(bottom right, #ffced7, #e8c5e9); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(bottom right, #ffced7, #e8c5e9); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(to bottom right, #ffced7, #e8c5e9); /* Standard syntax */
+    background: #ffecf5; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(left top, #ffecf5, #ffe8ff); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(bottom right, #ffecf5, #e8cce9); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(bottom right, #ffecf5, #e8cce9); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to bottom right, #ffecf5, #e8cce9); /* Standard syntax */
 }
 
