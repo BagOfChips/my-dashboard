@@ -161,14 +161,8 @@ function getComments(postId, limit, depth, callback){
         depth: depth
     }, function(data){
 
-        // todo: parse returned data here
         /**
-         * 1. trim comments - remove unnecessary info - may need to implement BFS first
-         * 2. parse into HTML
-         *  2.1 need to implement some sort of BFS to traverse tree of comments
-         *  2.2 string them together formatting
-         * 3. display comments on right hand side column
-         *
+         * display comments on right hand side column
          */
 
         var comments = data.comments;
@@ -235,7 +229,7 @@ function commentsBFS(comment){
             html:
                 "<div class=\"comment row\" id=\"" + node["id"] + "\">" +
                     "<div class=\"comment-headers col-xs-12 col-md-12\">" +
-                        "<div class=\"comment-username col-xs-3 col-md-3\">" +
+                        "<div class=\"comment-username col-xs-4 col-md-4\">" +
                             "<p>" +
                                 node["author"] +
                             "</p>" +
@@ -247,7 +241,7 @@ function commentsBFS(comment){
                             "</p>" +
                         "</div>" +
 
-                        "<div class=\"comment-time col-xs-7 col-md-7\">" +
+                        "<div class=\"comment-time col-xs-6 col-md-6\">" +
                             "<p>" +
                                 node["created_utc"] +
                             "</p>" +
@@ -313,21 +307,20 @@ function toggleNavBar(event){
     var mouseX = event.clientX;
     var mouseY = event.clientY;
 
-    if(mouseX <= windowWidth * 0.44 && mouseY <= 40 && !navToggle){
+    if(mouseX <= windowWidth * 0.44 && mouseY <= 50 && !navToggle){
         $("#nav").animate({
-            marginTop: 0,
-            opacity: "1.0"
-        }, 500, "swing");
+            marginTop: 0
+        }, 300, "swing");
 
         // callback not working? but toggling the flag here works though
         navToggle = true;
         //console.log(navToggle);
 
-    }else if(navToggle && (mouseX > windowWidth * 0.44 || mouseY > 40)){
+    }else if(navToggle && (mouseX > windowWidth * 0.44 || mouseY > 50)){
+
         $("#nav").animate({
-            opacity: "0.0",
             marginTop: "-40px"
-        }, 500, "swing");
+        }, 300, "swing");
 
         navToggle = false;
         //console.log(navToggle);
@@ -372,34 +365,39 @@ function toHTML(redditPosts){
         var post = redditPosts[i];
         var formattedPost = "";
 
-        if(i % 2 !== 0){
+        /*if(i % 2 !== 0){
             formattedPost += "<div class=\"row border-bottom border-top single-post\">"
         }else{
             formattedPost += "<div class=\"row single-post\">"
-        }
-
+        }*/
+        formattedPost += "<div class=\"row single-post\">";
         formattedPost +=
-            "<div class=\"col-md-2 col-xs-2 center-upvotes upvote-styling bold\">"
-                + "<p>" + redditPosts[i].score + "</p>"
-            + "</div>"
-
-            + "<div class=\"col-md-10 col-xs-10\">"
+            //"<div class=\"col-md-2 col-xs-2 center-upvotes upvote-styling bold\">"
+                //+ "<p>" + redditPosts[i].score + "</p>"
+            //+ "</div>"+
+            "<div class=\"col-md-12 col-xs-12\">"
                 + "<a href=\"" + post.url + "\">"
                     + "<p class=\"reddit-title\">" + post.title + "</p>"
                 + "</a>"
 
                 + "<div class=\"row extra-post-info\">"
-                    + "<div class=\"col-md-3 col-xs-3\">"
+
+                    + "<div class=\"col-md-2 col-xs-2 bold post-upvotes\">"
+                        + "<img class=\"upvote-icon\" src=\"images/upvote-icon.png\" alt=\"upvotes\">"
+                        + "<p> " + post.score + "</p>"
+                    + "</div>"
+
+                    + "<div class=\"col-md-2 col-xs-2\">"
                         + "<a href=\"https://www.reddit.com/user/" + post.author + "\">"
                             + "<p>" + post.author + "</p>"
                         + "</a>"
                     + "</div>"
 
-                    + "<div class=\"col-md-3 col-xs-3\">"
+                    + "<div class=\"col-md-2 col-xs-2\">"
                         + "<p>" + post.created + "</p>"
                     + "</div>"
 
-                    + "<div class=\"col-md-3 col-xs-3 bold\">"
+                    + "<div class=\"col-md-3 col-xs-3 bold subreddit-link\">"
                         + "<a href=\"https://www.reddit.com/" + post.subreddit + "\">"
                             + "<p>" + post.subreddit + "</p>"
                         + "</a>"

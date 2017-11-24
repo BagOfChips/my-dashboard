@@ -43,6 +43,7 @@
     /* remove super thin border between cells */
     -webkit-box-shadow: none;
     box-shadow: none;
+
 }
 
 .border-left {
@@ -121,6 +122,12 @@ html, body {
     padding-bottom: 20px;
 }
 
+#right-column-0 p{
+    color: #3b4550;
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
 /* PADDING */
 
 .container-fluid {
@@ -149,9 +156,8 @@ html, body {
 
     height: 40px;
 
-    background-color: #bababa;
+    background-color: rgb(255, 206, 215);
 
-    opacity: 0;
     margin-top: -40px;
     position: absolute;
     width: 100%;
@@ -167,15 +173,15 @@ html, body {
     position: relative;
     display: block;
     padding: 10px 15px;
-    color: #2e3135;
+    color: #3b4550;
 
 }
 
 .nav > li > a:hover,
 .nav > li > a:focus {
     text-decoration: none;
-    background-color: #2e3135;
-    color: #bababa;
+    background-color: #3b4550;
+    color: #cc782f;
 }
 
 .nav > li > a > img {
@@ -209,7 +215,7 @@ html, body {
 .nav-tabs > li.active > a:focus {
     color: #cc782f;
     cursor: default;
-    background-color: #2e3135;
+    background-color: #3b4550;
     border: 0;
     border-bottom-color: transparent;
 }
@@ -239,7 +245,7 @@ p, a, h3, h4{
 .upvote-styling p{
     font-size: 20px;
     margin-bottom: 0;
-    color: #bababa;
+    color: #bfbfbf;
 }
 
 .reddit-title{
@@ -277,7 +283,10 @@ p, a, h3, h4{
     /*padding-top: 10px;
     padding-right: 5px;
     padding-left: 15px;*/
-    padding: 0;
+
+    /*padding: 0;*/
+    padding-left: 0;
+    padding-right: 16px;
     background-color: #484d53;
 }
 
@@ -289,6 +298,9 @@ p, a, h3, h4{
 .single-post{
     padding-top: 10px;
     padding-bottom: 10px;
+
+    padding-right: 10px;
+    padding-left: 10px;
     /*background-color: #f3dfde;*/
 }
 
@@ -296,6 +308,7 @@ p, a, h3, h4{
 .single-post:focus {
     text-decoration: none;
     background-color: #2e3135;
+    border-radius: 30px 0px 0px 0px;
     /*border: none;*/
 }
 
@@ -322,16 +335,44 @@ a:visited p{
 
 a:hover{
     text-decoration: #5b687d underline;
+    cursor: hand;
 }
 
 
+/* EXTRA POST INFO */
+
+.subreddit-link a p{
+    color: #f0bdd1;
+}
+
+.post-upvotes{
+    display: inline-block;
+}
+
+.post-upvotes p{
+    display: inline;
+    color: #b3d9e9;
+}
 
 /* COMMENT LINK */
+.comment-link{
+
+}
+
+/* ICONS */
+.upvote-icon{
+    display: inline;
+    margin-bottom: 3px;
+}
 
 /* COMMENT */
 .comment{
     margin: 0;
-    padding: 10px;
+    padding: 12px 0 10px 10px;
+
+    /* todo: remove later */
+    /*border: 1px black solid;*/
+    border-left: 1px black solid;
 }
 
 .comment-body{
@@ -343,7 +384,33 @@ a:hover{
 }
 
 /* scroll bars */
+#mCSB_2_container{
+    margin-right: 16px;
+}
 
 
+/* GRADIENT */
+.dark-gradient{
+    background: #515559; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(left top, #515559, #252d37); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(bottom right, #515559, #252d37); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(bottom right, #515559, #252d37); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to bottom right, #515559, #252d37); /* Standard syntax */
+}
 
+.orange-tint-gradient{
+    background: #f5c7ff;
+    background: -webkit-linear-gradient(left top, #ffced7, #957f96); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(bottom right, #f5c7ff, #957f96); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(bottom right, #f5c7ff, #957f96); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to bottom right, #f5c7ff, #957f96); /* Standard syntax */
+}
+
+.peach-gradient{
+    background: #ffced7; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(left top, #ffced7, #e8c5e9); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(bottom right, #ffced7, #e8c5e9); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(bottom right, #ffced7, #e8c5e9); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to bottom right, #ffced7, #e8c5e9); /* Standard syntax */
+}
 
