@@ -376,7 +376,7 @@ a p:hover{
 }
 
 .comment:hover{
-    border-left: 2px #5b687d solid;
+    border-left: 2px rgba(128, 145, 175, 0.8) solid;
 }
 
 .comment-body{

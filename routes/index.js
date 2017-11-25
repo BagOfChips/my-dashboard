@@ -11,6 +11,7 @@ const r = new snoowrap({
 });
 
 var timeAgo = require('epoch-to-timeago').timeAgo;
+var finish = require('finish');
 
 
 router.use(function timeLog(req, res, next){
@@ -94,7 +95,19 @@ function fetchTopComments(postId, limit, depth, callback){
          */
 
         if(numberComments > 0){
-            callback(comments);
+
+            // use finish module to handle for loops async
+            finish(function(async){
+                  comments.comments.forEach(function(commentTree){
+                      async(function(done){
+                            convertRedditCommentsEpochTimes(commentTree, done);
+                      });
+                  });
+            }, function(err, res){
+                // err and res are "returned" as null by default, ignore
+                callback(comments);
+            });
+
         }else{
             // failure to fetch >> todo: error message generated
             console.log("fetchTopComments WENT WRONG");
@@ -102,6 +115,57 @@ function fetchTopComments(postId, limit, depth, callback){
         }
     });
 }
+
+/**
+ * Implement dfs on a list tree
+ * f# pseudo code below
+ * ****************************
+ * ****************************
+
+     // depth first traversal on a ListTree graph
+     let rec depthFirstIter f (Node(x, ts)) =
+         (printf "\n");
+         (f x);  // print node
+         (List.iter (depthFirstIter f) ts)
+
+ * ****************************
+ * Note: there may be a speed issue
+ *  because the internet told me javascript sucks as recursion
+ *
+ * Tested:
+ *  Fetching 400 comments
+ *
+ *  w/o this method: 1.21 seconds
+ *  w/ this method 1.29 seconds
+ *
+ * Conclusion:
+ *  Dont give a shit
+ *  Cuz the reddit api will always be the upper bound when a get call is made
+ *
+ * @param comments
+ * @returns {*}
+ */
+function convertRedditCommentsEpochTimes(commentRoot, callback){
+    var now = new Date().getTime();
+    //console.log("now: " + now);
+
+    commentRoot.created_utc = timeAgo(commentRoot.created_utc * 1000, now);
+    for(var i = 0; i < commentRoot.replies.length; i++){
+
+        // use finish module to handle for loops async
+        finish(function(async){
+            async(function(done){
+                convertRedditCommentsEpochTimes(commentRoot.replies[i], done);
+            });
+        }, function(err, res){
+            // nothing happens here?
+            //console.log(res);
+        })
+    }
+
+    callback(null, null);
+}
+
 
 // removing keys seems to be REALLY slow when done recursively on deep objects
 // unused
@@ -186,19 +250,5 @@ function convertRedditListEpochTimes(posts){
     }
     return posts;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 module.exports = router;

@@ -15,6 +15,7 @@
     "epoch-timeago": "^1.0.5",
     "epoch-to-timeago": "^1.0.1",
     "express": "~4.15.2",
+    "finish": "^0.6.3",
     "morgan": "~1.8.1",
     "serve-favicon": "~2.4.2",
     "snoowrap": "^1.14.2"
