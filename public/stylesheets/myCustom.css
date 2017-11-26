@@ -366,6 +366,12 @@ a p:hover{
     margin-bottom: 3px;
 }
 
+.reverse-hue{
+    margin-bottom: 5px;
+    -webkit-filter : hue-rotate(180deg);
+    filter : hue-rotate(180deg);
+}
+
 /* COMMENT */
 .comment{
     margin: 0;
@@ -376,7 +382,7 @@ a p:hover{
 }
 
 .comment:hover{
-    border-left: 2px rgba(128, 145, 175, 0.8) solid;
+    border-left: 2px rgba(128, 145, 175, 0.5) solid;
 }
 
 .comment-body{
@@ -392,8 +398,12 @@ a p:hover{
 }
 
 .comment-box{
-    margin-left: 0;
+    margin-left: 10px;
     margin-right: 16px;
+}
+
+#display-comments{
+    padding-left: 0;
 }
 
 /* scroll bars */
@@ -428,3 +438,12 @@ a p:hover{
     background: linear-gradient(to bottom right, #ffecf5, #e8cce9); /* Standard syntax */
 }
 
+/* INLINE BLOCK */
+.comment-username{
+    display: inline-block;
+}
+
+.comment-username p,
+.comment-username img{
+    display: inline;
+}

@@ -24,7 +24,7 @@ $(document).ready(function(){
 
     // hide nav bar if not hovered over
     document.addEventListener("mousemove", toggleNavBar);
-
+    document.addEventListener("mousemove", toggleCommentsNavBar);
 
     // todo: how to spawn the following click listeners upon custom user defined subreddit?
     // todo: look at addEventListener()
@@ -78,33 +78,123 @@ $(document).ready(function(){
             depth: 2
         };
 
-        // need to display as tree structure
-        getComments(
-            postId,
-            getCommentsParameters.limit,
-            getCommentsParameters.depth,
-            function(commentsArray){
-                console.log(commentsArray);
+        // 1.1 - check if element exists first
+        // this should be done BEFORE the get call
+        if($(document.getElementById(postId + "-li-tab")).length){
+            // we should probably check to make sure -body, -tab exists as well
+            // but assume for now that they do
 
-                /**
-                 * Why is this 0?
-                 *
-                 * Possible reasons:
-                 *  1. some wacky async <-- this one
-                 *  2. javascript is wack <-- this one too
-                 */
-                console.log("commmentsArray length: " + commentsArray.length);
+            console.log("tab already exists - switching over...");
 
-                for(var i = 0; i < commentsArray.length; i++){
-                    //console.log("attempting to display comment tree: " + i);
-                    displayComments(commentsArray[i]);
+            removeActiveClassFromCommentTabs();
+            addActiveClassToCommentTabs(postId);
+        }else{
+
+            // need to display as tree structure
+            getComments(
+                postId,
+                getCommentsParameters.limit,
+                getCommentsParameters.depth,
+                function(commentsArray){
+                    // todo: MAKE FUNCTIONS
+                    console.log(commentsArray);
+
+                    /**
+                     * Why is this 0? - fixed
+                     *
+                     * Possible reasons:
+                     *  1. some wacky async <-- this one
+                     *  2. javascript is wack <-- this one too
+                     */
+                    //console.log("commmentsArray length: " + commentsArray.length);
+
+                    if('length' in commentsArray){
+
+                        /**
+                         * 1. generate new tab - called postId + "-tab"
+                         *  1.1 check if tab already generated
+                         *      if so, "switch" to it
+                         *      if already displayed, do nothing
+                         *  1.2 switch to tab, set as: class="active"
+                         *      may have to remove 'class="active"' from other tabs' classes
+                         * 2. generate in tab-content: postId + "-body"
+                         * 3. display commentsArray in postId + "-body"
+                         *
+                         */
+
+
+                        var newTab =
+                            "<li class=\"active\" id=\"" + postId + "-li-tab\">" +
+                                "<a data-toggle=\"tab\" href=\"#" + postId + "-body\" id=\"" + postId + "-tab\">" +
+                                    postId + // change this later
+                                "</a>" +
+                            "</li>";
+
+                        var newTabBody =
+                            "<div id=\"" + postId + "-body" + "\" class=\"tab-pane fade in active\">" +
+                            "</div>";
+
+                        // 1.2 before appending any elements
+                        // remove class="active" from all other tabs which contains the class
+                        removeActiveClassFromCommentTabs();
+
+                        $(document.getElementById("comments-navbar")).append(newTab);
+                        $(document.getElementById("display-comments")).append(newTabBody);
+
+                        $.commentTabs.push(postId);
+                        console.log($.commentTabs);
+
+                        for(var i = 0; i < commentsArray.length; i++){
+                            //console.log("attempting to display comment tree: " + i);
+                            displayComments(commentsArray[i], postId);
+                        }
+                    }
                 }
-            }
-        );
-
-
+            );
+        }
     });
 });
+
+// array to comment tabs
+// has postId values of opened comments tabs
+$.commentTabs = [];
+
+function addActiveClassToCommentTabs(postId){
+    $(document.getElementById(postId + "-body")).addClass("active");
+    $(document.getElementById(postId + "-li-tab")).addClass("active");
+
+    // the body is not being displayed properly - still not active?
+    // might be an async issue
+
+    // the timeout below does not help
+    if(!$(document.getElementById(postId + "-body")).hasClass("active")
+        || !$(document.getElementById(postId + "-li-tab")).hasClass("active")){
+
+        console.log("still not active, trying again in 5ms...");
+        // just call again in 5ms
+        setTimeout(addActiveClassToCommentTabs(postId), 5);
+    }
+
+    console.log("comments for: " + postId + " should now be active (shown)");
+}
+
+/**
+ * Use the global list above and remove elements with: class="active"
+ */
+function removeActiveClassFromCommentTabs(){
+    for(var i = 0; i < $.commentTabs.length; i++){
+        if($(document.getElementById($.commentTabs[i] + "-body")).hasClass("active")){
+            $(document.getElementById($.commentTabs[i] + "-body")).removeClass("active");
+            console.log("class=\"active\" removed from body");
+        }
+
+        if($(document.getElementById($.commentTabs[i] + "-li-tab")).hasClass("active")){
+            $(document.getElementById($.commentTabs[i] + "-li-tab")).removeClass("active");
+            console.log("class=\"active\" removed from li");
+        }
+    }
+}
+
 
 /**
  * For each root comment
@@ -115,14 +205,12 @@ $(document).ready(function(){
  *      append each value to the parentId element
  *
  */
-function displayComments(commentsArray){
+function displayComments(commentsArray, postId){
     var commentBox = commentsArray[0];
     var rootComment = commentsArray[1];
 
-    $(document.getElementById("display-comments"))
+    $(document.getElementById(postId + "-body"))
         .append(commentBox); // commentBox has an id=root_comment_id + "-box"
-
-    //console.log("#" + rootComment["id"] + "-box");
 
     waitForElementToDisplay("#" + rootComment.id + "-box", 10, function(comment){
         $(document.getElementById(comment.id + "-box")).append(comment.html);
@@ -229,19 +317,27 @@ function commentsBFS(comment){
             html:
                 "<div class=\"comment row\" id=\"" + node["id"] + "\">" +
                     "<div class=\"comment-headers col-xs-12 col-md-12\">" +
-                        "<div class=\"comment-username col-xs-4 col-md-4\">" +
+                        "<div class=\"comment-username col-xs-8 col-md-8\">" +
                             "<p>" +
                                 node["author"] +
                             "</p>" +
+
+                            "<p>&nbsp;&nbsp;</p>" + // spaces
+
+                            "<p class=\"comment-score bold\">" +
+                                node["score"] +
+                            " </p>" +
+
+                            "<img class=\"upvote-icon reverse-hue\" src=\"images/upvote-icon.png\" alt=\"\">" +
                         "</div>" +
 
-                        "<div class=\"comment-score col-xs-2 col-md-2 bold\">" +
+                        /*"<div class=\"comment-score col-xs-2 col-md-2 bold\">" +
                             "<p>" +
                                 node["score"] +
                             "</p>" +
-                        "</div>" +
+                        "</div>" +*/
 
-                        "<div class=\"comment-time col-xs-6 col-md-6\">" +
+                        "<div class=\"comment-time col-xs-4 col-md-4\">" +
                             "<p>" +
                                 node["created_utc"] +
                             "</p>" +
@@ -302,7 +398,7 @@ function loadPosts(limit){
 var navToggle = false;
 function toggleNavBar(event){
     var windowWidth = $(window).width();
-    // windowHeight not used, nav bar always 24px
+    // windowHeight not used, nav bar always 40px
     //var windowHeight = $(window).height();
     var mouseX = event.clientX;
     var mouseY = event.clientY;
@@ -326,6 +422,31 @@ function toggleNavBar(event){
         //console.log(navToggle);
     }
 }
+
+var commentsNavToggle = false;
+function toggleCommentsNavBar(event){
+    var windowWidth = $(window).width();
+    var mouseX = event.clientX;
+    var mouseY = event.clientY;
+
+    if(mouseX >= windowWidth * 0.40 && mouseY <= 50 && !commentsNavToggle){
+        $("#comments-navbar").animate({
+            marginTop: 0
+        }, 300, "swing");
+
+        commentsNavToggle = true;
+
+    }else if(commentsNavToggle && (mouseX < windowWidth * 0.40 || mouseY > 50)){
+
+        $("#comments-navbar").animate({
+            marginTop: "-40px"
+        }, 300, "swing");
+
+        commentsNavToggle = false;
+    }
+}
+
+
 
 /**
  * .html() will overwrite everything
