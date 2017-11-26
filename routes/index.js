@@ -73,6 +73,27 @@ router.get('/comments', function(req, res){
     });
 });
 
+router.get("/postInfo", function(req, res){
+    var postId = req.query.postId;
+    console.log(postId);
+
+    var attribute = req.query.attribute;
+    console.log("attribute to fetch from: " + postId + "\n  " + attribute);
+
+    fetchPostAttribute(postId, attribute, function(data){
+        res.send(data);
+    });
+});
+
+function fetchPostAttribute(postId, attribute, callback){
+    r.getSubmission(postId)[attribute]
+        .then(post => {
+            //console.log("sending postInfo: " + post[attribute]);
+            //callback(post[attribute]);
+            console.log("sending postInfo: " + post);
+            callback(post);
+        });
+}
 
 function fetchTopComments(postId, limit, depth, callback){
     console.log("limit: " + limit);

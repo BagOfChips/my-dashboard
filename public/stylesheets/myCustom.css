@@ -94,7 +94,7 @@ html, body {
     height: 100%;
     flex: 1;
 
-    padding-top: 40px;
+    padding-top: 45px;
     padding-bottom: 20px;
 }
 
@@ -118,12 +118,13 @@ html, body {
     height: 100%;
     flex: 2;
 
-    padding-top: 40px;
+    padding-top: 45px;
     padding-bottom: 20px;
+
 }
 
 #right-column-0 p{
-    color: #252d37;
+    /*color: #252d37;*/
     margin-bottom: 0;
 }
 
@@ -149,17 +150,19 @@ html, body {
     font-size: 18px;
     font-style: italic;
     padding-left: 0;
-    padding-bottom: 5px;
+    padding-bottom: 8px;
     margin-bottom: 0;
     list-style: none;
 
-    height: 40px;
+    height: 45px;
 
     background-color: rgb(255, 206, 215);
 
-    margin-top: -40px;
+    margin-top: -35px;
     position: absolute;
     width: 100%;
+
+    clip-path: polygon(0 0, 100% 0, 100% 75%, 0 100%);
 }
 
 
@@ -219,6 +222,23 @@ html, body {
     border-bottom-color: transparent;
 }
 
+#comments-navbar,
+#comments-navbar a{
+    color: #e1c2c8;
+}
+
+#comments-navbar a:hover,
+#comments-navbar a:focus{
+    color: #cc782f;
+    background-color: #3b4550;
+}
+
+.truncate-comment-tab a{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+}
 
 /* TABS OVERFLOW */
 
@@ -374,19 +394,38 @@ a p:hover{
 
 /* COMMENT */
 .comment{
+    color: #252d37;
+
     margin: 0;
     padding: 12px 0 10px 10px;
+}
 
-    /* todo: remove later */
-    /*border: 1px black solid;*/
+.comment-score{
+    color: #46341d;
+}
+
+.comment-body a{
+    color: #4682a0;
 }
 
 .comment:hover{
     border-left: 2px rgba(128, 145, 175, 0.5) solid;
 }
 
+.comment:hover p{
+    visibility: visible;
+}
+
 .comment-body{
     margin: 0;
+}
+
+.comment-author{
+    color: #746873;
+}
+
+.comment-body p{
+    color: #252d37;
 }
 
 .large-comment-font{
@@ -405,6 +444,13 @@ a p:hover{
 #display-comments{
     padding-left: 0;
 }
+
+.comment-time{
+    visibility: hidden;
+}
+
+
+
 
 /* scroll bars */
 #mCSB_2_container{
@@ -437,6 +483,15 @@ a p:hover{
     background: -moz-linear-gradient(bottom right, #ffecf5, #e8cce9); /* For Firefox 3.6 to 15 */
     background: linear-gradient(to bottom right, #ffecf5, #e8cce9); /* Standard syntax */
 }
+
+.dark-blue-tint-gradient{
+    background: #5d81aa; /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(left top, #5d81aa, #274673); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(bottom right, #5d81aa, #274673); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(bottom right, #5d81aa, #274673); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to bottom right, #5d81aa, #274673); /* Standard syntax */
+}
+
 
 /* INLINE BLOCK */
 .comment-username{

@@ -73,6 +73,13 @@ $(document).ready(function(){
         var postId = this.id;
         console.log("click on .comment-link with id: " + postId);
 
+        // todo: we also want the post title - how to get?
+        var postTitle;
+        getPostTitleWithId(postId, function(title){
+             postTitle = title;
+             console.log("postTitle retrieved: " + postTitle);
+        });
+
         var getCommentsParameters = {
             limit: 5,
             depth: 2
@@ -124,9 +131,14 @@ $(document).ready(function(){
 
 
                         var newTab =
-                            "<li class=\"active\" id=\"" + postId + "-li-tab\">" +
+                            "<li class=\"active truncate-comment-tab\" id=\"" + postId + "-li-tab\">" +
                                 "<a data-toggle=\"tab\" href=\"#" + postId + "-body\" id=\"" + postId + "-tab\">" +
-                                    postId + // change this later
+                                    //postId + // change this later
+
+                                    // todo: in progress
+                                    postTitle +
+
+
                                 "</a>" +
                             "</li>";
 
@@ -239,6 +251,19 @@ function waitForElementToDisplay(selector, time, f, comment){
     }
 }
 
+function getPostTitleWithId(postId, callback){
+    getSpecificPostInfo(postId, "title", callback);
+}
+
+function getSpecificPostInfo(postId, attribute, callback){
+    $.get("/postInfo", {
+        postId: postId,
+        attribute: attribute
+    }, function(data){
+        callback(data);
+    });
+}
+
 
 function getComments(postId, limit, depth, callback){
     var htmlToOrder = [];
@@ -318,7 +343,7 @@ function commentsBFS(comment){
                 "<div class=\"comment row\" id=\"" + node["id"] + "\">" +
                     "<div class=\"comment-headers col-xs-12 col-md-12\">" +
                         "<div class=\"comment-username col-xs-8 col-md-8\">" +
-                            "<p>" +
+                            "<p class=\"comment-author\">" +
                                 node["author"] +
                             "</p>" +
 
@@ -345,10 +370,11 @@ function commentsBFS(comment){
                     "</div>" +
 
                     "<div class=\"comment-body row\">" +
-                        "<div class=\"col-xs-12 col-md-12 bold\">" +
-                            "<p class=\"large-comment-font\">" +
+                        "<div class=\"col-xs-12 col-md-12 bold large-comment-font\">" +
+                            node["body_html"] + // use body_html instead
+                            /*"<p class=\"large-comment-font\">" +
                                 node["body"] +
-                            "</p>" +
+                            "</p>" +*/
                         "</div>" +
                     "</div>" +
 
@@ -415,7 +441,7 @@ function toggleNavBar(event){
     }else if(navToggle && (mouseX > windowWidth * 0.44 || mouseY > 50)){
 
         $("#nav").animate({
-            marginTop: "-40px"
+            marginTop: "-35px"
         }, 300, "swing");
 
         navToggle = false;
@@ -439,7 +465,7 @@ function toggleCommentsNavBar(event){
     }else if(commentsNavToggle && (mouseX < windowWidth * 0.40 || mouseY > 50)){
 
         $("#comments-navbar").animate({
-            marginTop: "-40px"
+            marginTop: "-35px"
         }, 300, "swing");
 
         commentsNavToggle = false;
