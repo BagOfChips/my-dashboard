@@ -1,0 +1,11 @@
+{
+  "returnedPostsLimit": 25,
+  "fetchedCommentParameters": {
+    "limit": 1,
+    "depth": 1
+  },
+  "wait": {
+    "comments": 5,
+    "commentsTimeout": 50
+  }
+}

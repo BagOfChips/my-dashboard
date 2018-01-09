@@ -1,4 +1,6 @@
 
+var socket = io();
+
 $(document).ready(function(){
 
     // fetch front page of reddit - done when loading page
@@ -70,102 +72,176 @@ $(document).ready(function(){
      * class .comment-link dynamically added, use following structure below
      */
     $(document).on("click", "p.comment-link", function(){
-        var postId = this.id;
+        var postId = this.id.slice(0, -9); // removes "-comments"
         console.log("click on .comment-link with id: " + postId);
 
-        // todo: we also want the post title - how to get?
-        var postTitle;
         getPostTitleWithId(postId, function(title){
-             postTitle = title;
-             console.log("postTitle retrieved: " + postTitle);
-        });
+            console.log("postTitle retrieved: " + title);
 
-        var getCommentsParameters = {
-            limit: 5,
-            depth: 2
+            // get comments in the callback - sometimes postTitle would be undefined
+            // this slows fetching and displaying comments
+
+            var getCommentsParameters = {
+                limit: 5,
+                depth: 2
+            };
+
+            // 1.1 - check if element exists first
+            // this should be done BEFORE the get call
+            if($(document.getElementById(postId + "-li-tab")).length){
+                // we should probably check to make sure -body, -tab exists as well
+                // but assume for now that they do
+
+                console.log("tab already exists - switching over...");
+
+                removeActiveClassFromCommentTabs();
+                addActiveClassToCommentTabs(postId);
+            }else{
+
+                // need to display as tree structure
+                getComments(
+                    postId,
+                    getCommentsParameters.limit,
+                    getCommentsParameters.depth,
+
+                    // callback
+                    function(commentsArray){
+                        addNewTabAndDisplayComments(commentsArray, postId, title);
+                    }
+                );
+            }
+        });
+    });
+
+    // socket io
+    var interval = 10000;
+    loopUpdatePostUpvotes(interval);
+
+    socket.on("updatedPostData", function(data){
+        displayUpdatedPosts(data);
+    });
+
+});
+
+function loopUpdatePostUpvotes(interval){
+    console.log("update posts through WS interval: " + interval);
+    setInterval(function(){
+        updatePostUpvotesThroughWS();
+    }, interval);
+}
+
+/**
+ * SOCKET.IO
+ * We want to update posts' upvote value through websockets
+ *
+ *  1. Send which subreddit do we want to fetch for updated posts' data - $.tabSelected
+ *  1.1 Also send limits - $.fetchedRedditPostsCount.r/...
+ *  2. Retrieve here and update html based on id
+ *  2.1 If id not found, ignore
+ *  2.2 If id found, update data if changed accordingly
+ *
+ * May want to add some animations
+ */
+function updatePostUpvotesThroughWS(){
+    var subredditPostsParameters = {
+        subreddit: $.tabSelected,
+        limit: $.fetchedRedditPostsCount[$.tabSelected]
+    };
+    socket.emit("fetchUpdatedPosts", subredditPostsParameters);
+}
+
+
+function displayUpdatedPosts(posts){
+    for(var i = 0; i < posts.length; i++){
+        // get current upvotes, time and comments
+        var postIdToCheck = posts[i].id;
+        var currentValues = {
+            upvotes: $("#" + postIdToCheck + "-score").text(),
+            time: $("#" + postIdToCheck + "-created").text(),
+            comments: $("#" + postIdToCheck + "-comments").text()
         };
 
-        // 1.1 - check if element exists first
-        // this should be done BEFORE the get call
-        if($(document.getElementById(postId + "-li-tab")).length){
-            // we should probably check to make sure -body, -tab exists as well
-            // but assume for now that they do
+        var newValues = {
+            upvotes: posts[i].score,
+            time: posts[i].created_utc,
+            comments: posts[i].num_comments + " comments"
+        };
 
-            console.log("tab already exists - switching over...");
-
-            removeActiveClassFromCommentTabs();
-            addActiveClassToCommentTabs(postId);
-        }else{
-
-            // need to display as tree structure
-            getComments(
-                postId,
-                getCommentsParameters.limit,
-                getCommentsParameters.depth,
-                function(commentsArray){
-                    // todo: MAKE FUNCTIONS
-                    console.log(commentsArray);
-
-                    /**
-                     * Why is this 0? - fixed
-                     *
-                     * Possible reasons:
-                     *  1. some wacky async <-- this one
-                     *  2. javascript is wack <-- this one too
-                     */
-                    //console.log("commmentsArray length: " + commentsArray.length);
-
-                    if('length' in commentsArray){
-
-                        /**
-                         * 1. generate new tab - called postId + "-tab"
-                         *  1.1 check if tab already generated
-                         *      if so, "switch" to it
-                         *      if already displayed, do nothing
-                         *  1.2 switch to tab, set as: class="active"
-                         *      may have to remove 'class="active"' from other tabs' classes
-                         * 2. generate in tab-content: postId + "-body"
-                         * 3. display commentsArray in postId + "-body"
-                         *
-                         */
-
-
-                        var newTab =
-                            "<li class=\"active truncate-comment-tab\" id=\"" + postId + "-li-tab\">" +
-                                "<a data-toggle=\"tab\" href=\"#" + postId + "-body\" id=\"" + postId + "-tab\">" +
-                                    //postId + // change this later
-
-                                    // todo: in progress
-                                    postTitle +
-
-
-                                "</a>" +
-                            "</li>";
-
-                        var newTabBody =
-                            "<div id=\"" + postId + "-body" + "\" class=\"tab-pane fade in active\">" +
-                            "</div>";
-
-                        // 1.2 before appending any elements
-                        // remove class="active" from all other tabs which contains the class
-                        removeActiveClassFromCommentTabs();
-
-                        $(document.getElementById("comments-navbar")).append(newTab);
-                        $(document.getElementById("display-comments")).append(newTabBody);
-
-                        $.commentTabs.push(postId);
-                        console.log($.commentTabs);
-
-                        for(var i = 0; i < commentsArray.length; i++){
-                            //console.log("attempting to display comment tree: " + i);
-                            displayComments(commentsArray[i], postId);
-                        }
-                    }
-                }
-            );
+        if(currentValues.upvotes != newValues.upvotes){
+            replaceTextValueGivenId(postIdToCheck + "-score", newValues.upvotes);
+        }else if(currentValues.time != newValues.time){
+            replaceTextValueGivenId(postIdToCheck + "-created", newValues.time);
+        }else if(currentValues.comments != newValues.comments){
+            replaceTextValueGivenId(postIdToCheck + "-comments", newValues.comments);
         }
-    });
-});
+    }
+}
+
+function replaceTextValueGivenId(id, newValue){
+    console.log("updating " + id);
+    $(document.getElementById(id)).animate({
+        opacity: '0.0'
+    }, 300).text(newValue).animate({
+        opacity: '1.0'
+    }, 300);
+
+    if(id.slice(-6) == "-score"){
+        // todo: if downvoted, flip arrow around
+
+        // get upvote icon
+        $(document.getElementById(id.slice(0, -6) + "-upvote-icon")).animate({
+            opacity: '0.0',
+            "top": '-=25px'
+        }, 300).animate({
+            "top": "+=25px"
+        }, 100).animate({
+            opacity: '1.0'
+        }, 300);
+
+    }
+}
+
+function addNewTabAndDisplayComments(commentsArray, postId, postTitle){
+    // check if array
+    if('length' in commentsArray){
+        /**
+         * 1. generate new tab - called postId + "-tab"
+         *  1.1 check if tab already generated
+         *      if so, "switch" to it
+         *      if already displayed, do nothing
+         *  1.2 switch to tab, set as: class="active"
+         *      may have to remove 'class="active"' from other tabs' classes
+         * 2. generate in tab-content: postId + "-body"
+         * 3. display commentsArray in postId + "-body"
+         *
+         */
+        var newTab =
+            "<li class=\"active truncate-comment-tab\" id=\"" + postId + "-li-tab\">" +
+            "<a data-toggle=\"tab\" href=\"#" + postId + "-body\" id=\"" + postId + "-tab\">" +
+            postTitle +
+            "</a>" +
+            "</li>";
+
+        var newTabBody =
+            "<div id=\"" + postId + "-body" + "\" class=\"tab-pane fade in active\">" +
+            "</div>";
+
+        // 1.2 before appending any elements
+        // remove class="active" from all other tabs which contains the class
+        removeActiveClassFromCommentTabs();
+
+        $(document.getElementById("comments-navbar")).append(newTab);
+        $(document.getElementById("display-comments")).append(newTabBody);
+
+        $.commentTabs.push(postId);
+        console.log($.commentTabs);
+
+        for(var i = 0; i < commentsArray.length; i++){
+            displayComments(commentsArray[i], postId);
+        }
+    }
+}
+
 
 // array to comment tabs
 // has postId values of opened comments tabs
@@ -236,11 +312,9 @@ function displayComments(commentsArray, postId){
     }
 }
 
-// unused
 function waitForElementToDisplay(selector, time, f, comment){
     if(document.querySelector(selector) != null){
         f(comment);
-        return;
     }else{
         setTimeout(function(){
 
@@ -264,7 +338,15 @@ function getSpecificPostInfo(postId, attribute, callback){
     });
 }
 
-
+/**
+ * Given a postId, we want to return an html parsed list of comments to display
+ *  Comments displayed on left hand side
+ *
+ * @param postId
+ * @param limit
+ * @param depth
+ * @param callback
+ */
 function getComments(postId, limit, depth, callback){
     var htmlToOrder = [];
 
@@ -273,19 +355,13 @@ function getComments(postId, limit, depth, callback){
         limit: limit,
         depth: depth
     }, function(data){
-
-        /**
-         * display comments on right hand side column
-         */
-
         var comments = data.comments;
-        //console.log(comments);
 
         for(var i = 0; i < comments.length; i++){
             htmlToOrder.push(commentsBFS(comments[i]));
         }
 
-        // callback here - get is async
+        // callback here
         callback(htmlToOrder);
     });
 }
@@ -351,16 +427,11 @@ function commentsBFS(comment){
 
                             "<p class=\"comment-score bold\">" +
                                 node["score"] +
-                            " </p>" +
+                            "</p>" +
 
+                            "<p>&nbsp;</p>" +
                             "<img class=\"upvote-icon reverse-hue\" src=\"images/upvote-icon.png\" alt=\"\">" +
                         "</div>" +
-
-                        /*"<div class=\"comment-score col-xs-2 col-md-2 bold\">" +
-                            "<p>" +
-                                node["score"] +
-                            "</p>" +
-                        "</div>" +*/
 
                         "<div class=\"comment-time col-xs-4 col-md-4\">" +
                             "<p>" +
@@ -372,9 +443,6 @@ function commentsBFS(comment){
                     "<div class=\"comment-body row\">" +
                         "<div class=\"col-xs-12 col-md-12 bold large-comment-font\">" +
                             node["body_html"] + // use body_html instead
-                            /*"<p class=\"large-comment-font\">" +
-                                node["body"] +
-                            "</p>" +*/
                         "</div>" +
                     "</div>" +
 
@@ -436,7 +504,6 @@ function toggleNavBar(event){
 
         // callback not working? but toggling the flag here works though
         navToggle = true;
-        //console.log(navToggle);
 
     }else if(navToggle && (mouseX > windowWidth * 0.44 || mouseY > 50)){
 
@@ -445,7 +512,6 @@ function toggleNavBar(event){
         }, 300, "swing");
 
         navToggle = false;
-        //console.log(navToggle);
     }
 }
 
@@ -495,7 +561,6 @@ function displayPosts(formattedPosts, subreddit){
      */
 
     $(document.getElementById(subreddit.slice(2) + "-body")).append(formattedPosts);
-    //$("#" + "r\\/" + subreddit.slice(2) + "-body").append(formattedPosts);
 }
 
 
@@ -512,26 +577,18 @@ function toHTML(redditPosts){
         var post = redditPosts[i];
         var formattedPost = "";
 
-        /*if(i % 2 !== 0){
-            formattedPost += "<div class=\"row border-bottom border-top single-post\">"
-        }else{
-            formattedPost += "<div class=\"row single-post\">"
-        }*/
-        formattedPost += "<div class=\"row single-post\">";
-        formattedPost +=
-            //"<div class=\"col-md-2 col-xs-2 center-upvotes upvote-styling bold\">"
-                //+ "<p>" + redditPosts[i].score + "</p>"
-            //+ "</div>"+
-            "<div class=\"col-md-12 col-xs-12\">"
+        formattedPost += "<div class=\"row single-post\">"
+            + "<div class=\"col-md-12 col-xs-12\">"
                 + "<a href=\"" + post.url + "\">"
-                    + "<p class=\"reddit-title\">" + post.title + "</p>"
+                    + "<p id=\"" + post.id + "\" class=\"reddit-title\">" + post.title + "</p>"
                 + "</a>"
 
                 + "<div class=\"row extra-post-info\">"
 
                     + "<div class=\"col-md-2 col-xs-2 bold post-upvotes\">"
-                        + "<img class=\"upvote-icon\" src=\"images/upvote-icon.png\" alt=\"upvotes\">"
-                        + "<p> " + post.score + "</p>"
+                        + "<img id=\"" + post.id + "-upvote-icon\" class=\"upvote-icon\" src=\"images/upvote-icon.png\" alt=\"upvotes\">"
+                        + "<p>&nbsp</p>"
+                        + "<p id=\"" + post.id + "-score\">" + post.score + "</p>"
                     + "</div>"
 
                     + "<div class=\"col-md-2 col-xs-2\">"
@@ -541,7 +598,7 @@ function toHTML(redditPosts){
                     + "</div>"
 
                     + "<div class=\"col-md-2 col-xs-2\">"
-                        + "<p>" + post.created + "</p>"
+                        + "<p id=\"" + post.id + "-created\">" + post.created + "</p>"
                     + "</div>"
 
                     + "<div class=\"col-md-3 col-xs-3 bold subreddit-link\">"
@@ -551,9 +608,8 @@ function toHTML(redditPosts){
                     + "</div>"
 
                     + "<div class=\"col-md-3 col-xs-3 bold \">"
-                        //+ "<a href=\"https://www.reddit.com/" + post.permalink + "\">"
                         + "<a>"
-                            + "<p class=\"comment-link\" id=\"" + post.id + "\">" + post.comments + " comments</p>"
+                            + "<p class=\"comment-link\" id=\"" + post.id + "-comments\">" + post.comments + " comments</p>"
                         + "</a>"
                     + "</div>"
                 + "</div>"
@@ -570,7 +626,6 @@ function toHTML(redditPosts){
         posts.push(formattedPost);
     }
 
-    //console.log(posts.toString());
     return posts;
 }
 

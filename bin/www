@@ -29,6 +29,66 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
+// timeAgo
+var timeAgo = require('epoch-to-timeago').timeAgo;
+
+// import reddit api wrapper
+var snoowrap = require('snoowrap');
+const r = new snoowrap({
+    userAgent: process.env.reddit_userAgent,
+    clientId: process.env.reddit_clientId,
+    clientSecret: process.env.reddit_clientSecret,
+    refreshToken: process.env.reddit_refreshToken
+});
+
+// socket.io - for web sockets
+// due to this auto generated Express.js template from webstorm
+// i cant find a different place for the code below
+
+var io = require('socket.io')(server);
+
+io.on('connection', function(socket){
+    console.log("SOCKET.IO: connected");
+
+    socket.on("fetchUpdatedPosts", function(data){
+
+        // data.subreddit, data.limit
+        data.subreddit = data.subreddit.slice(2); // remove "r/"
+        sendUpdatedPosts(data.subreddit, data.limit, function(updatedPosts){
+            // send data back to browser
+            io.emit("updatedPostData", updatedPosts);
+        });
+    });
+});
+
+
+function sendUpdatedPosts(subreddit, limit, callback){
+    console.log("subreddit: " + subreddit);
+
+    r.getSubreddit(subreddit).getHot({
+        limit: limit
+    }).then(hotPosts => {
+
+        // convert epoch times to readable human string
+        hotPosts = convertRedditListEpochTimes(hotPosts);
+
+        if('length' in hotPosts){
+            callback(hotPosts);
+        }else{
+            console.log("no posts found; subreddit: " + subreddit + "; limit: " + limit);
+            callback(null);
+        }
+    });
+}
+
+function convertRedditListEpochTimes(posts){
+    var now = new Date().getTime();
+    for(var i = 0; i < posts.length; i++){
+        posts[i].created_utc = timeAgo(posts[i].created_utc * 1000, now);
+    }
+    return posts;
+}
+
 /**
  * Normalize a port into a number, string, or false.
  */

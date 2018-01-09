@@ -14,6 +14,7 @@ var timeAgo = require('epoch-to-timeago').timeAgo;
 var finish = require('finish');
 
 
+// unused
 router.use(function timeLog(req, res, next){
     //console.log("time: ", Date.now());
     next();
@@ -31,7 +32,7 @@ router.get("/fetchHot", function(req, res){
     var subreddit = req.query.subreddit;
     var limit = parseInt(req.query.limit);
     console.log("limit: " + limit);
-    console.log("typeof(limit): " + typeof limit);
+    //console.log("typeof(limit): " + typeof limit);
 
     // have to wait generating before we send
     fetchTopHotPosts(subreddit, limit, function(hotPosts){
@@ -188,7 +189,7 @@ function convertRedditCommentsEpochTimes(commentRoot, callback){
 }
 
 
-// removing keys seems to be REALLY slow when done recursively on deep objects
+// removing keys seems to "freeze" when done recursively on deep objects
 // unused
 var keysToRemove = [
     "approved_at_utc",
@@ -234,7 +235,7 @@ function fetch25HotPostsAll(limit, callback){
 
 function fetchTopHotPosts(subreddit, limit, callback){
     console.log("subreddit: " + subreddit);
-    console.log("limit: " + limit);
+    //console.log("limit: " + limit);
 
     r.getSubreddit(subreddit).getHot({
         limit: limit
@@ -247,6 +248,7 @@ function fetchTopHotPosts(subreddit, limit, callback){
         console.log("Number of hotPosts fetched: " + numberHotPosts);
         //console.log(hotPosts);
 
+        // todo: if there are sticky posts, we seem to fetch them as well; ignore them
         if(numberHotPosts = limit){
             hotPosts = hotPosts.slice(numberHotPosts - 25);
             callback(hotPosts);
@@ -256,7 +258,7 @@ function fetchTopHotPosts(subreddit, limit, callback){
         }else{
             // failure to fetch >> todo: error message generated
             console.log("fetchTopHotPosts WENT WRONG");
-            callback(null);
+            callback(null); // todo: handle null on front end
         }
 
     });
@@ -266,7 +268,6 @@ function convertRedditListEpochTimes(posts){
     var now = new Date().getTime();
     console.log("now: " + now);
     for(var i = 0; i < posts.length; i++){
-        //console.log("created: " + posts[i].created_utc);
         posts[i].created_utc = timeAgo(posts[i].created_utc * 1000, now);
     }
     return posts;
