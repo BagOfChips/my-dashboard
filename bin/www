@@ -29,6 +29,9 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
+// finish
+var finish = require('finish');
+
 // timeAgo
 var timeAgo = require('epoch-to-timeago').timeAgo;
 
@@ -59,8 +62,63 @@ io.on('connection', function(socket){
             io.emit("updatedPostData", updatedPosts);
         });
     });
+
+    socket.on("fetchUpdatedComments", function(data){
+        sendUpdatedComments(data, function(updatedPosts){
+            io.emit("updatedCommentData", updatedPosts);
+        });
+    });
 });
 
+function sendUpdatedComments(postId, callback){
+    console.log("postId: " + postId);
+
+    r.getSubmission(postId).expandReplies({
+        limit: 1,
+        depth: 1
+    }).then(comments => {
+        var numberComments = comments.comments.length;
+        console.log("Number of comments fetched: " + numberComments);
+
+        if(numberComments > 0){
+
+            // use finish module to handle for loops async
+            finish(function(async){
+                comments.comments.forEach(function(commentTree){
+                    async(function(done){
+                        convertRedditCommentsEpochTimes(commentTree, done);
+                    });
+                });
+            }, function(err, res){
+                // err and res are "returned" as null by default, ignore
+                callback(comments);
+            });
+
+        }else{
+            // failure to fetch
+            console.log("fetchTopComments WENT WRONG");
+            callback(null);
+        }
+
+    });
+}
+
+function convertRedditCommentsEpochTimes(commentRoot, callback){
+    var now = new Date().getTime();
+
+    commentRoot.created_utc = timeAgo(commentRoot.created_utc * 1000, now);
+    for(var i = 0; i < commentRoot.replies.length; i++){
+
+        // use finish module to handle for loops async
+        finish(function(async){
+            async(function(done){
+                convertRedditCommentsEpochTimes(commentRoot.replies[i], done);
+            });
+        }, function(err, res){});
+    }
+
+    callback(null, null);
+}
 
 function sendUpdatedPosts(subreddit, limit, callback){
     console.log("subreddit: " + subreddit);

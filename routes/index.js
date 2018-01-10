@@ -96,6 +96,11 @@ function fetchPostAttribute(postId, attribute, callback){
         });
 }
 
+/**
+ * reddit API will not always fetch
+ *  - wanted # of comments (limit)
+ *  - wanted # of subsequent replies (depth)
+ */
 function fetchTopComments(postId, limit, depth, callback){
     console.log("limit: " + limit);
 
@@ -106,15 +111,6 @@ function fetchTopComments(postId, limit, depth, callback){
 
         var numberComments = comments.comments.length;
         console.log("Number of comments fetched: " + numberComments);
-        //console.log(comments);
-
-        /**
-         * reddit API will not always fetch
-         *  - wanted # of comments (limit)
-         *  - wanted # of subsequent replies (depth)
-         *
-         * leave as front end issue - LOL
-         */
 
         if(numberComments > 0){
 

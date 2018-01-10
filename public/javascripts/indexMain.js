@@ -121,13 +121,61 @@ $(document).ready(function(){
         displayUpdatedPosts(data);
     });
 
+    loopUpdateCommentUpvotes(interval);
+
+    socket.on("updatedCommentData", function(data){
+        // we are given a updated list of comments
+        // lets parse this through BFS first
+        for(var i = 0; i < data.comments.length; i++){
+            displayUpdatedComments(updateCommentsBFS(data.comments[i]));
+        }
+    });
 });
+
+function updateCommentsBFS(comment){
+    var output = [];
+
+    var queue = [];
+    queue.push(comment);
+
+    while(queue.length > 0){
+        var node = queue.shift();
+        output.push({
+            id: node.id,
+            upvotes: node.score,
+            time: node.created_utc
+        });
+
+        for(var i = 0; i < node["replies"].length; i++){
+            queue.push(node["replies"][i]);
+        }
+    }
+
+    return output;
+}
+
+function loopUpdateCommentUpvotes(interval){
+    console.log("update comments through WS interval: " + interval);
+    setInterval(function(){
+        updateCommentUpvotesThroughWS();
+    }, interval);
+}
 
 function loopUpdatePostUpvotes(interval){
     console.log("update posts through WS interval: " + interval);
     setInterval(function(){
         updatePostUpvotesThroughWS();
     }, interval);
+}
+
+function updateCommentUpvotesThroughWS(){
+    var postId = $("#comments-navbar .active").attr("id");
+    console.log("postId: " + postId);
+
+    if(postId != null){
+        // remove "-li-tab"
+        socket.emit("fetchUpdatedComments", postId.slice(0, -7));
+    }
 }
 
 /**
@@ -139,8 +187,6 @@ function loopUpdatePostUpvotes(interval){
  *  2. Retrieve here and update html based on id
  *  2.1 If id not found, ignore
  *  2.2 If id found, update data if changed accordingly
- *
- * May want to add some animations
  */
 function updatePostUpvotesThroughWS(){
     var subredditPostsParameters = {
@@ -168,38 +214,143 @@ function displayUpdatedPosts(posts){
         };
 
         if(currentValues.upvotes != newValues.upvotes){
-            replaceTextValueGivenId(postIdToCheck + "-score", newValues.upvotes);
-        }else if(currentValues.time != newValues.time){
-            replaceTextValueGivenId(postIdToCheck + "-created", newValues.time);
-        }else if(currentValues.comments != newValues.comments){
-            replaceTextValueGivenId(postIdToCheck + "-comments", newValues.comments);
+            replaceTextValueGivenId(postIdToCheck + "-score", newValues.upvotes, false);
+        }
+
+        if(currentValues.time != newValues.time){
+            replaceTextValueGivenId(postIdToCheck + "-created", newValues.time, false);
+        }
+
+        if(currentValues.comments != newValues.comments){
+            replaceTextValueGivenId(postIdToCheck + "-comments", newValues.comments, false);
         }
     }
 }
 
-function replaceTextValueGivenId(id, newValue){
-    console.log("updating " + id);
+function displayUpdatedComments(comments){
+    // we have a list of new comment properties
+    //  id - UNchanged
+    //  time - changed
+    //  upvotes - changed
+    for(var i = 0; i < comments.length; i++){
+        var commentIdToCheck = comments[i].id;
+
+        var currentValues = {
+            time: $(document.getElementById(commentIdToCheck + "-created")).text(),
+            upvotes: $(document.getElementById(commentIdToCheck + "-score")).text()
+        };
+
+        var newValues = {
+            time: comments[i].time,
+            upvotes: comments[i].upvotes
+        };
+
+        if(currentValues.time != newValues.time){
+            replaceTextValueGivenId(commentIdToCheck + "-created", newValues.time, true);
+        }
+
+        if(currentValues.upvotes != newValues.upvotes){
+            replaceTextValueGivenId(commentIdToCheck + "-score", newValues.upvotes, true);
+        }
+    }
+}
+
+function replaceTextValue(id, newValue, isComment){
+
+    var hueProperty = 180;
+    if(isComment){
+        hueProperty = 0;
+    }
+
+    if(id.slice(-6) == "-score"){
+        if(isDownvote($(document.getElementById(id)).text(), newValue)){
+            // if downvoted, flip arrow around
+            $(document.getElementById(id.slice(0, -6) + "-upvote-icon")).animate({
+                rotationProperty: 180,
+                hueProperty: hueProperty,
+                top: "+=25px",
+                opacity: 0.0
+            }, {
+                step: function(now, tween){
+                    if(tween.prop == "rotationProperty"){
+                        $(this).css({
+                            "-webkit-transform": "rotate(" + now + "deg)",
+                            "-moz-transform": "rotate(" + now + "deg)",
+                            "transform": "rotate(" + now + "deg)"
+                        });
+                    }else if(tween.prop == "hueProperty"){
+                        $(this).css({
+                            "-webkit-filter": "hue-rotate(" + now + "deg)",
+                            "filter": "hue-rotate(" + now + "deg)"
+                        });
+                    }
+                }
+            }).animate({
+                top: "-=25px",
+                rotationProperty: 360,
+                hueProperty: hueProperty + 180
+            }, {
+                step: function(now, tween){
+                    if(tween.prop == "rotationProperty"){
+                        $(this).css({
+                            "-webkit-transform": "rotate(" + now + "deg)",
+                            "-moz-transform": "rotate(" + now + "deg)",
+                            "transform": "rotate(" + now + "deg)"
+                        });
+                    }else if(tween.prop == "hueProperty"){
+                        $(this).css({
+                            "-webkit-filter": "hue-rotate(" + now + "deg)",
+                            "filter": "hue-rotate(" + now + "deg)"
+                        });
+                    }
+                }
+            }).animate({
+                opacity: 1.0
+            }, 300);
+        }else{
+            // get upvote icon
+            $(document.getElementById(id.slice(0, -6) + "-upvote-icon")).animate({
+                opacity: '0.0',
+                "top": '-=25px'
+            }, 300).animate({
+                "top": "+=25px"
+            }, 100).animate({
+                opacity: '1.0'
+            }, 300);
+        }
+    }
+
     $(document.getElementById(id)).animate({
         opacity: '0.0'
     }, 300).text(newValue).animate({
         opacity: '1.0'
     }, 300);
+}
 
-    if(id.slice(-6) == "-score"){
-        // todo: if downvoted, flip arrow around
-
-        // get upvote icon
-        $(document.getElementById(id.slice(0, -6) + "-upvote-icon")).animate({
-            opacity: '0.0',
-            "top": '-=25px'
-        }, 300).animate({
-            "top": "+=25px"
-        }, 100).animate({
-            opacity: '1.0'
-        }, 300);
-
+/**
+ * wrapper for replaceTextValue()
+ *  delays some animations
+ *
+ * @param id
+ * @param newValue
+ */
+function replaceTextValueGivenId(id, newValue, isComment){
+    if(Math.random() < 0.2){
+        // delay for around 25ms
+        setTimeout(function(){
+            replaceTextValue(id, newValue, isComment);
+        }, 25);
     }
 }
+
+function isDownvote(currentUpvoteValue, newUpvoteValue){
+    currentUpvoteValue = parseInt(currentUpvoteValue);
+    newUpvoteValue = parseInt(newUpvoteValue);
+
+    // new value lower - downvoted
+    return currentUpvoteValue > newUpvoteValue;
+}
+
 
 function addNewTabAndDisplayComments(commentsArray, postId, postTitle){
     // check if array
@@ -425,16 +576,16 @@ function commentsBFS(comment){
 
                             "<p>&nbsp;&nbsp;</p>" + // spaces
 
-                            "<p class=\"comment-score bold\">" +
+                            "<p id=\"" + node["id"] + "-score\" class=\"comment-score bold\">" +
                                 node["score"] +
                             "</p>" +
 
                             "<p>&nbsp;</p>" +
-                            "<img class=\"upvote-icon reverse-hue\" src=\"images/upvote-icon.png\" alt=\"\">" +
+                            "<img id=\"" + node["id"] + "-upvote-icon\" class=\"upvote-icon reverse-hue\" src=\"images/upvote-icon.png\" alt=\"\">" +
                         "</div>" +
 
                         "<div class=\"comment-time col-xs-4 col-md-4\">" +
-                            "<p>" +
+                            "<p id=\"" + node["id"] + "-created\">" +
                                 node["created_utc"] +
                             "</p>" +
                         "</div>" +

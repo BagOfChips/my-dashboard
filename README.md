@@ -9,6 +9,7 @@ Procrastinate efficiently and avoid having your browser tab look like this
 * Splittings posts and comments across 2 columns
 * Minimalistic, fast and responsive GUI
 * Simple and smooth pagination upon scrolling to the bottom of the screen 
+* Websockets listen to changes in upvotes 
 
 ## demo
 * Using the [snoowrap wrapper API](https://github.com/not-an-aardvark/snoowrap) for Reddit, calls are made to fetch and display hot posts
@@ -25,10 +26,11 @@ Procrastinate efficiently and avoid having your browser tab look like this
     * [epoch-to-timeago](https://www.npmjs.com/package/epoch-to-timeago) - time conversion
     * [snoowrap](https://github.com/not-an-aardvark/snoowrap) - wrapper API for Reddit
     * [finish](https://www.npmjs.com/package/finish) - similar to [async](https://www.npmjs.com/package/async)
+    * [socket.io](https://socket.io/) - for websockets 
 * Frontend  
-    * [mCustomScrollbar](http://manos.malihu.gr/jquery-custom-content-scroller/)
+    * [mCustomScrollbar](http://manos.malihu.gr/jquery-custom-content-scroller/) - custom scrollbar
     * [jQuery](https://jquery.com/)
-    * [Bootstrap](https://getbootstrap.com/)
+    * [Bootstrap](https://getbootstrap.com/) - CSS framework 
 
 ## future plans
 * User authentication
