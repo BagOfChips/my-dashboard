@@ -1,19 +1,5 @@
 
 /* CUSTOM FONT */
-@font-face{
-    font-family: Gravity-Book;
-    src: url("/Gravity-Book.otf");
-}
-
-@font-face{
-    font-family: Gravity-Bold;
-    src: url("/Gravity-Bold.otf")
-}
-
-@font-face {
-    font-family: King;
-    src: url("/KIN668.TTF");
-}
 
 /* GRID CELLS STYLING */
 
@@ -68,9 +54,7 @@ html, body {
     height: 100%;
     margin: 0;
     overflow: hidden;
-
-    /*font-family: Gravity-Book;*/
-    font-family: "Courier New";
+    font-family: "Helvetica";
 }
 
 ::-webkit-scrollbar {
@@ -134,6 +118,23 @@ html, body {
     padding: 0;
 }
 
+#main div{
+    -webkit-transition: width 0.66s ease, margin 0.66s ease;
+    -moz-transition: width 0.66s ease, margin 0.66s ease;
+    -o-transition: width 0.66s ease, margin 0.66s ease;
+    transition: width 0.66s ease, margin 0.66s ease;
+}
+
+.col-md-12, .col-xs-12{
+    padding-right: 0;
+}
+
+.col-md-0, .col-xs-0{
+    width: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
 .col-md-5, .col-xs-5 {
     padding-right: 0;
     /*padding-left: 0;*/
@@ -154,7 +155,7 @@ html, body {
     margin-bottom: 0;
     list-style: none;
 
-    height: 45px;
+    height: 47px;
 
     background-color: rgb(255, 206, 215);
 
@@ -163,6 +164,15 @@ html, body {
     width: 100%;
 
     clip-path: polygon(0 0, 100% 0, 100% 75%, 0 100%);
+    -webkit-transition: clip-path 0.3s;
+    -moz-transition: clip-path 0.3s;
+    -ms-transition: clip-path 0.3s;
+    -o-transition: clip-path 0.3s;
+    transition: clip-path 0.3s;
+}
+
+.nav:hover {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
 }
 
 
@@ -249,7 +259,7 @@ html, body {
 
 /* COLOURS */
 p, a, h3, h4{
-    color: #b4a3b3;
+    color: #e1e1e1;
 }
 
 
@@ -282,7 +292,7 @@ p, a, h3, h4{
 
 .extra-post-info p{
     margin-bottom: 0;
-    color: #e8a64a;
+    /*color: #e8a64a;*/
 
     text-overflow: ellipsis;
     /*white-space: nowrap;*/
@@ -336,7 +346,7 @@ p, a, h3, h4{
 }
 
 .nsfw {
-    padding-right: 35px;
+    padding-right: 3cm;
 }
 
 .nsfw p{
@@ -395,22 +405,22 @@ a p:hover{
 
 /* COMMENT */
 .comment{
-    color: #252d37;
+    color: #d7cdce;
 
     margin: 0;
     padding: 12px 0 10px 10px;
 }
 
 .comment-score{
-    color: #46341d;
+    color: #cc782f;
 }
 
 .comment-body a{
-    color: #4682a0;
+    color: #59b0d7;
 }
 
 .comment:hover{
-    border-left: 2px rgba(128, 145, 175, 0.5) solid;
+    border-left: 2px rgba(193, 218, 235, 0.5) solid;
 }
 
 .comment:hover p{
@@ -422,11 +432,12 @@ a p:hover{
 }
 
 .comment-author{
-    color: #746873;
+    color: #e8a64a;
 }
 
 .comment-body p{
-    color: #252d37;
+    color: #e1e1e1;
+    font-weight: normal;
 }
 
 .large-comment-font{
@@ -462,35 +473,43 @@ a p:hover{
 
 /* GRADIENT */
 .dark-gradient{
-    background: #515559; /* For browsers that do not support gradients */
-    background: -webkit-linear-gradient(left top, #515559, #252d37); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(bottom right, #515559, #252d37); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(bottom right, #515559, #252d37); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(to bottom right, #515559, #252d37); /* Standard syntax */
+    background: #21374b; /*515559*/
+    background: -webkit-linear-gradient(left top, #21374b, #06151d);
+    background: -o-linear-gradient(bottom right, #21374b, #06151d); /*252d37 0e1c28*/
+    background: -moz-linear-gradient(bottom right, #21374b, #06151d);
+    background: linear-gradient(to bottom right, #21374b, #06151d);
+}
+
+.dark-gradient-mirror{
+    background: #21374b;
+    background: -webkit-linear-gradient(right top, #21374b, #06151d);
+    background: -o-linear-gradient(bottom left, #21374b, #06151d);
+    background: -moz-linear-gradient(bottom left, #21374b, #06151d);
+    background: linear-gradient(to bottom left, #21374b, #06151d);
 }
 
 .orange-tint-gradient{
     background: #f5c7ff;
-    background: -webkit-linear-gradient(left top, #ffced7, #957f96); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(bottom right, #f5c7ff, #957f96); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(bottom right, #f5c7ff, #957f96); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(to bottom right, #f5c7ff, #957f96); /* Standard syntax */
+    background: -webkit-linear-gradient(left top, #ffced7, #957f96);
+    background: -o-linear-gradient(bottom right, #f5c7ff, #957f96);
+    background: -moz-linear-gradient(bottom right, #f5c7ff, #957f96);
+    background: linear-gradient(to bottom right, #f5c7ff, #957f96);
 }
 
 .peach-gradient{
-    background: #ffecf5; /* For browsers that do not support gradients */
-    background: -webkit-linear-gradient(left top, #ffecf5, #ffe8ff); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(bottom right, #ffecf5, #e8cce9); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(bottom right, #ffecf5, #e8cce9); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(to bottom right, #ffecf5, #e8cce9); /* Standard syntax */
+    background: #ffecf5;
+    background: -webkit-linear-gradient(left top, #ffecf5, #ffe8ff);
+    background: -o-linear-gradient(bottom right, #ffecf5, #e8cce9);
+    background: -moz-linear-gradient(bottom right, #ffecf5, #e8cce9);
+    background: linear-gradient(to bottom right, #ffecf5, #e8cce9);
 }
 
 .dark-blue-tint-gradient{
-    background: #5d81aa; /* For browsers that do not support gradients */
-    background: -webkit-linear-gradient(left top, #5d81aa, #274673); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(bottom right, #5d81aa, #274673); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(bottom right, #5d81aa, #274673); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(to bottom right, #5d81aa, #274673); /* Standard syntax */
+    background: #5d81aa;
+    background: -webkit-linear-gradient(left top, #5d81aa, #274673);
+    background: -o-linear-gradient(bottom right, #5d81aa, #274673);
+    background: -moz-linear-gradient(bottom right, #5d81aa, #274673);
+    background: linear-gradient(to bottom right, #5d81aa, #274673);
 }
 
 

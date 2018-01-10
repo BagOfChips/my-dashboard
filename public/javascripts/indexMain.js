@@ -71,7 +71,16 @@ $(document).ready(function(){
      *
      * class .comment-link dynamically added, use following structure below
      */
+    var displayCommentsColumn = false;
     $(document).on("click", "p.comment-link", function(){
+
+        // todo: test
+        if(!displayCommentsColumn){
+            displayCommentsColumn = true;
+            $("#left-column").toggleClass("col-md-12 col-md-5").toggleClass("col-xs-12 col-xs-5");
+            $("#right-column").toggleClass("col-md-0 col-md-7").toggleClass("col-xs-0 col-xs-7");
+        }
+
         var postId = this.id.slice(0, -9); // removes "-comments"
         console.log("click on .comment-link with id: " + postId);
 
@@ -651,7 +660,7 @@ function toggleNavBar(event){
     if(mouseX <= windowWidth * 0.44 && mouseY <= 50 && !navToggle){
         $("#nav").animate({
             marginTop: 0
-        }, 300, "swing");
+        }, 300);
 
         // callback not working? but toggling the flag here works though
         navToggle = true;
@@ -660,7 +669,7 @@ function toggleNavBar(event){
 
         $("#nav").animate({
             marginTop: "-35px"
-        }, 300, "swing");
+        }, 300);
 
         navToggle = false;
     }
@@ -674,16 +683,16 @@ function toggleCommentsNavBar(event){
 
     if(mouseX >= windowWidth * 0.40 && mouseY <= 50 && !commentsNavToggle){
         $("#comments-navbar").animate({
-            marginTop: 0
-        }, 300, "swing");
+            marginTop: 0,
+        }, 300);
 
         commentsNavToggle = true;
 
     }else if(commentsNavToggle && (mouseX < windowWidth * 0.40 || mouseY > 50)){
 
         $("#comments-navbar").animate({
-            marginTop: "-35px"
-        }, 300, "swing");
+            marginTop: "-35px",
+        }, 300);
 
         commentsNavToggle = false;
     }
@@ -749,7 +758,7 @@ function toHTML(redditPosts){
                     + "</div>"
 
                     + "<div class=\"col-md-2 col-xs-2\">"
-                        + "<p id=\"" + post.id + "-created\">" + post.created + "</p>"
+                        + "<p id=\"" + post.id + "-created\" class=\"post-created\">" + post.created + "</p>"
                     + "</div>"
 
                     + "<div class=\"col-md-3 col-xs-3 bold subreddit-link\">"

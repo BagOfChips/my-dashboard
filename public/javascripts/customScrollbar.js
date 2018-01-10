@@ -22,17 +22,16 @@
                 console.log("Custom scrollbar initialized");
             }
         },
-        theme: "dark-thin",
+        theme: "light-thin"
     };
 
     // copy object
     var redditScrollSettings = JSON.parse(JSON.stringify(defaultScrollSettings));
 
-    redditScrollSettings.theme = "light-thin";
     redditScrollSettings.callbacks.onTotalScroll = function(){
         console.log("Scrolled to the bottom - fetching 25 more posts");
 
-        // todo: get which tab is selected first
+        // get which tab is selected first
         console.log("tabSelected: " + $.tabSelected);
         console.log("fetchedRedditPostsCount[tabSelected]: " + $.fetchedRedditPostsCount[$.tabSelected]);
 
